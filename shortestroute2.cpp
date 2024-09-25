@@ -1,13 +1,10 @@
-#include <iostream>
-#include <vector>
-#include <climits>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 long long INF = LLONG_MAX;
-
+int n, m, q;
 int main() {
-    int n, m, q;
     cin >> n >> m >> q;
     vector<vector<pair<int, long long>>> adj(n + 1);
     for (int i = 0; i < m; ++i) {
