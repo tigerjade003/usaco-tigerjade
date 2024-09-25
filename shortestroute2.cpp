@@ -24,9 +24,7 @@ int main() {
             for (int u = 1; u <= n; ++u) {
                 if (dist[src][u] == INF) continue;
                 for (auto [v, cost] : adj[u]) {
-                    if (dist[src][u] + cost < dist[src][v]) {
-                        dist[src][v] = dist[src][u] + cost;
-                    }
+                    dist[src][v] = min(dist[src][v], dist[src][u] + cost);
                 }
             }
         }
