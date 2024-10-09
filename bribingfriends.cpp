@@ -9,3 +9,8 @@ void setIO(string file = "") {
     freopen((file + ".out").c_str(), "w", stdout);
   }
 }
+int n, m, k;
+int main(){
+    setIO();
+    cin >> n >> m >> k;
+}
