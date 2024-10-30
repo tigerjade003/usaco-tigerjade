@@ -53,5 +53,6 @@ int main(){
         cin >> N >> Q >> C;
         vector<int> sofar(N, 0);
         t.assign(4*N, 0);
+        build(1, 0, N);
     }
 }
