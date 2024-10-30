@@ -9,6 +9,7 @@ void setIO(string file = "") {
   }
 }
 vector<int> t;
+vector<int> nums;
 void build(int v, int tl, int tr){
     if(tl == tr){
         t[v] = nums[tl];
@@ -51,7 +52,7 @@ int main(){
     while(T--){
         int N, Q, C;
         cin >> N >> Q >> C;
-        vector<int> sofar(N, 0);
+        nums.assign(N, 0);
         t.assign(4*N, 0);
         build(1, 0, N);
     }
