@@ -53,6 +53,9 @@ int main(){
         int N, Q, C;
         cin >> N >> Q >> C;
         nums.assign(N, 0);
+        for(int i = 0; i<N; i++){
+            cin >> nums[i];
+        }
         t.assign(4*N, 0);
         build(1, 0, N);
     }
