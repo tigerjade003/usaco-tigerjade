@@ -10,6 +10,7 @@ void setIO(string file = "") {
 }
 vector<int> t;
 vector<int> nums;
+vector<bool> need;
 void build(int v, int tl, int tr){
     if(tl == tr){
         t[v] = nums[tl];
@@ -53,10 +54,15 @@ int main(){
         int N, Q, C;
         cin >> N >> Q >> C;
         nums.assign(N, 0);
+        need.assign(N, false);
         for(int i = 0; i<N; i++){
             cin >> nums[i];
+            if(nums[i] == 0){
+                need[i] = true;
+            }
         }
         t.assign(4*N, 0);
         build(1, 0, N);
+
     }
 }
