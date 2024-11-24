@@ -13,7 +13,7 @@ int main(){
         returned.push_back(false);
         int n;
         cin >> n;
-        while(n--){
+        for(int i = 0; i<n; i++){
             //<A> TURNS IN <B>'s BOOK
             string a;
             cin >> a;
@@ -45,6 +45,7 @@ int main(){
                 listofPeople.push_back(a);
                 returned.push_back(true);
             }
+            cin >> a;
         }
         int missing = 0;
         for(int i = 0; i<returned.size(); i++){
@@ -54,6 +55,5 @@ int main(){
             }
         }
         cout << absent << " HAS " << listofPeople[missing] << "'s BOOK" << endl;
-        cin >> absent;
     }
 }
