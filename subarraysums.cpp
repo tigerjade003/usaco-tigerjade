@@ -7,7 +7,15 @@ struct subarr{
 };
 int N;
 vector<int> nums;
-int main(){
+void setIO(string file = "") {
+  cin.tie(0)->sync_with_stdio(0);
+  if ((int)(file.size())) {
+    freopen((file + ".in").c_str(), "r", stdin);
+    freopen((file + ".out").c_str(), "w", stdout);
+  }
+}
+signed main(){
+    setIO();
     cin >> N;
     nums.assign(N, 0);
     for(int i = 0; i<N; i++){
@@ -20,31 +28,30 @@ int main(){
         totsum = 0;
         for(int j = i; j<N; j++){
             totsum += nums[j];
-            subarrs[last] = subarr();
-            subarrs[last].start = i;
-            subarrs[last].start = j;
-            subarrs[last].start = totsum;
+            subarrs[last] = {i, j, totsum};
             last++;
         }
     }
     sort(subarrs.begin(), subarrs.end(), [](const subarr&a, const subarr&b){
         return (a.sum < b.sum);
     });
+    /*
+    for(int i = 0; i<subarrs.size(); i++){
+        cout << subarrs[i].start << " " << subarrs[i].end << " " << subarrs[i].sum << endl;
+    }*/
     for(int i = 0; i<N; i++){
         int last = 1e15;
         bool hasit = (subarrs[0].start <=i &&  subarrs[0].end >= i);
-        for(int j = 1; j<subarrs.size(); j++){
+        int lastsum = subarrs[0].sum;
+        for(int j = 1; j<subarrs.size(); ++j){
             bool cur = (subarrs[j].start <= i &&  subarrs[j].end >= i);
             if(cur != hasit){
-                cur = hasit;
-                last = min(last, abs(subarrs[j].sum - subarrs[j-1].sum));
+                hasit = !hasit;
+                last = min(last, abs(subarrs[j].sum - lastsum));
             }
+            lastsum = subarrs[j].sum;
         }
-        cout << last;
-        if(i < N-1){
-            cout << " ";
-        }
+        cout << last << endl;
     }
-    cout << endl;
     return 0;
 }
