@@ -47,4 +47,7 @@ int main(){
         }
         cur = curs;
     }
+    for(int i = 0; i<n; i++){
+        cout << cangoto[i].size() << endl;
+    }   
 }
