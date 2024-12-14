@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define endl '\n'
-//#define int long long
+#define int long long
 void setIO(string file = "") {
   cin.tie(0)->sync_with_stdio(0);
   if ((int)(file.size())) {
