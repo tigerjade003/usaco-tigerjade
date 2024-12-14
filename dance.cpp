@@ -34,11 +34,17 @@ int main(){
         lastsize[i] = cangoto[i].size();
     }
     while(count > 0){
-        vector<int> cur(n, 0);
+        vector<int> curs(n, 0);
         for(int j = 0; j<n; j++){
-                
-            
-
+            curs[j] = cur[nums[j]];
+            if(istrue[cur[j]]){
+                cangoto[curs[j]].insert(cangoto[j].begin(), cangoto[j].end());
+                if(cangoto[curs[j]].size() == lastsize[curs[j]]){
+                    istrue[curs[j]] = false;
+                    count--;
+                }
+            }
         }
+        cur = curs;
     }
 }
