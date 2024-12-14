@@ -21,7 +21,6 @@ signed main(){
                 prefix[i] = cakes[i];
             }
         }
-        //Elsie takes the first i cakes and the last (N-2)/2 - i cakes;
         int maxCake = 0;
         for(int i = -1; i<(N-2)/2; i++){
             int cur = 0;
