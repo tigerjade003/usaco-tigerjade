@@ -23,5 +23,24 @@ signed main(){
             cin >> a >> b >> c;
             laws[i] = {a, b, c};
         }
+        sort(laws.begin(), laws.end(), [](const law&a, const law&b){
+            if(a.start != b.start) return a.start < b.start;
+            else if(a.end < b.end) return a.end < b.end;
+            else return a.min < b.min;
+        });
+        set<int> coord(location.begin(), location.end());
+        for(int i = 0; i<K; i++){
+            coord.insert(laws[i].start);
+            coord.insert(laws[i].end);
+        }
+        map<int, int> new_old;
+        vector<int> decompress;
+        int index = 0;
+        for(int co: coord){
+            new_old[co] = index++;
+            decompress.push_back(co);
+        }
+        int compress = decompress.size();
+        
     }
 }
