@@ -43,6 +43,9 @@ int main(){
                     istrue[curs[j]] = false;
                     count--;
                 }
+                else{
+                    lastsize[curs[j]] = cangoto[curs[j]].size();
+                }
             }
         }
         cur = curs;
