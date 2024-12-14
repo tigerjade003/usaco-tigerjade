@@ -11,7 +11,8 @@ void setIO(string file = "") {
 }
 int N, M, K;
 vector<pair<int, int>> cows;
-set<pair<int, int>> towers;
+priority_queue<pair<int, int>> towers;
+//set<pair<int, int>, greater<pair<int, int>>> towers;
 signed main(){
     cin >> N >> M >> K;
     for(int i = 0; i<N; i++){
@@ -19,29 +20,21 @@ signed main(){
         cin >> a >> b;
         cows.push_back({a, b});
     }
-    sort(cows.begin(), cows.end());
-    towers.insert({-K, M});
+    sort(cows.rbegin(), cows.rend());
+    towers.push({INT_MAX, M});
+    //towers.insert({INT_MAX, M});
     int ans = 0;
     for(int i = 0; i<N; i++){
-        while(towers.begin() -> first <= cows[i].first-K && cows[i].second > 0){
-            int size = towers.begin() -> second;
-            auto first = *towers.begin();
-            towers.erase(towers.begin());
-            if(first.second >= cows[i].second){
-                size = cows[i].second;
-                first.second-=cows[i].second;
-                cows[i].second = 0;
-            }
-            else{
-                size = first.second;
-                first.second = 0;
-                cows[i].second -= size;
-            }
-            if(first.second != 0){
-                towers.insert({first.first, first.second});
-            }
-            towers.insert({cows[i].first, size});
+        while(towers.top().first >= cows[i].first+K && cows[i].second > 0){
+            auto topt = towers.top();
+            towers.pop();
+            int size = min(topt.second, cows[i].second);
+            cows[i].second -= size;
             ans += size;
+            if (topt.second > size) {
+                towers.push({topt.first, topt.second - size});
+            }
+            towers.push({cows[i].first, size});
         }
     }
     cout << ans << endl;
