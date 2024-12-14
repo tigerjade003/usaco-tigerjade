@@ -11,6 +11,7 @@ void setIO(string file = "") {
 }
 int n, m, k;
 int main(){
-    setIO();
-    cin >> n >> m >> k;
+  setIO();
+  cin >> n >> m >> k;
+  
 }
