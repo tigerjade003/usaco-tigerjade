@@ -12,8 +12,8 @@ void setIO(string file = "") {
 int N, M, K;
 vector<pair<int, int>> cows;
 priority_queue<pair<int, int>> towers;
-//set<pair<int, int>, greater<pair<int, int>>> towers;
 signed main(){
+    setIO();
     cin >> N >> M >> K;
     for(int i = 0; i<N; i++){
         int a, b;
