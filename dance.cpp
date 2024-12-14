@@ -24,5 +24,20 @@ int main(){
         cangoto[nums[b]].emplace(a);
     }
     int count = n;
-
+    vector<bool> istrue(n, true);
+    for(int i = 0; i<n; i++){
+        if(cangoto[i].size() < k){
+            count--;
+            istrue[i] = false;
+        }
+    }
+    vector<int> cur(n, 0);
+    for(int i = 0; i<n; i++){
+        cur[i] = i;
+    }
+    while(count > 0){
+        for(int j = 0; j<n; j++){
+            
+        }
+    }
 }
