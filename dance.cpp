@@ -16,9 +16,9 @@ int main(){
         cin >> a >> b;
         a--;
         b--;
-        swap(nums[a], nums[b]);
         cangoto[nums[a]].emplace(b);
         cangoto[nums[b]].emplace(a);
+        swap(nums[a], nums[b]);
     }
     int count = n;
     vector<bool> istrue(n, true);
