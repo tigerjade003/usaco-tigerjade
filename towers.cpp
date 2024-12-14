@@ -23,23 +23,27 @@ signed main(){
     towers.insert({-K, M});
     int ans = 0;
     for(int i = 0; i<N; i++){
-        while(towers.begin() -> first < cows[i].first-K){
+        while(towers.begin() -> first <= cows[i].first-K && cows[i].second > 0){
             int size = towers.begin() -> second;
             auto first = *towers.begin();
             towers.erase(towers.begin());
             if(first.second >= cows[i].second){
                 size = cows[i].second;
                 first.second-=cows[i].second;
+                cows[i].second = 0;
             }
             else{
                 size = first.second;
                 first.second = 0;
+                cows[i].second -= size;
             }
             if(first.second != 0){
-                towers.insert(first.first, first.second);
+                towers.insert({first.first, first.second});
             }
-            towers.insert(cows[i].first, size);
+            towers.insert({cows[i].first, size});
             ans += size;
         }
     }
+    cout << ans << endl;
+    return 0;
 }
