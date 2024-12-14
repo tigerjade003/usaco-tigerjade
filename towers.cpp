@@ -22,7 +22,6 @@ signed main(){
     }
     sort(cows.rbegin(), cows.rend());
     towers.push({INT_MAX, M});
-    //towers.insert({INT_MAX, M});
     int ans = 0;
     for(int i = 0; i<N; i++){
         while(towers.top().first >= cows[i].first+K && cows[i].second > 0){
