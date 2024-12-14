@@ -16,10 +16,7 @@ int main(){
         cin >> a >> b;
         a--;
         b--;
-        int temp;
-        temp = nums[a];
-        nums[a] = nums[b];
-        nums[b] = temp;
+        swap(nums[a], nums[b]);
         cangoto[nums[a]].emplace(b);
         cangoto[nums[b]].emplace(a);
     }
