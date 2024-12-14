@@ -1,49 +1,50 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define endl '\n';
 int n, k;
-int main(){
+void setIO(string file = "") {
+  cin.tie(0)->sync_with_stdio(0);
+  if ((int)(file.size())) {
+    freopen((file + ".in").c_str(), "r", stdin);
+    freopen((file + ".out").c_str(), "w", stdout);
+  }
+}
+int main() {
+    setIO();
     cin >> n >> k;
-    vector<int> nums(n, 0);
-    vector<set<int>> cangoto(n, set<int>());
-    for(int i = 0; i<n; i++){
+    vector<int> nums(n);
+    vector<vector<bool>> cangoto(n, vector<bool>(n, false));
+    for (int i = 0; i < n; i++) {
         nums[i] = i;
-        cangoto[i].emplace(i);
+        cangoto[i][i] = true;
     }
-    for(int i = 0; i<k; i++){
+    vector<int> sizes(n, 1);
+    for (int i = 0; i < k; i++) {
         int a, b;
         cin >> a >> b;
-        a--;
-        b--;
-        cangoto[nums[a]].emplace(b);
-        cangoto[nums[b]].emplace(a);
+        a--; b--;
+        if(!cangoto[nums[a]][b]){
+            sizes[nums[a]]++;
+        }
+        if(!cangoto[nums[b]][a]){
+            sizes[nums[b]]++;
+        }
         swap(nums[a], nums[b]);
     }
-    int count = n;
-    vector<bool> istrue(n, true);
-    vector<int> cur(n, 0);
-    vector<int> lastsize(n, 0);
-    for(int i = 0; i<n; i++){
-        cur[i] = nums[i];
-        lastsize[i] = cangoto[i].size();
-    }
-    while(count > 0){
-        vector<int> curs(n, 0);
-        for(int j = 0; j<n; j++){
-            curs[j] = cur[nums[j]];
-            if(istrue[cur[j]]){
-                cangoto[curs[j]].insert(cangoto[j].begin(), cangoto[j].end());
-                if(cangoto[curs[j]].size() == lastsize[curs[j]]){
-                    istrue[curs[j]] = false;
-                    count--;
-                }
-                else{
-                    lastsize[curs[j]] = cangoto[curs[j]].size();
-                }
+    bool changed = true;
+    while (changed) {//O(N)
+        changed = false;
+        for (int i = 0; i < n; i++) {//O(N)
+            for (int j : cangoto[i]) {//O(N)
+            if(cangoto[nums[i]][j] == false){
+                changed = true;
+                cangoto[nums[i]][j] = true;
+                sizes[nums[i]]++;
             }
         }
-        cur = curs;
     }
-    for(int i = 0; i<n; i++){
-        cout << cangoto[i].size() << endl;
-    }   
+    for (int i = 0; i < n; i++) {
+        cout << sizes[i] << endl;
+    }
+    return 0;
 }
