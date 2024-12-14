@@ -4,11 +4,9 @@ int n, k;
 int main(){
     cin >> n >> k;
     vector<int> nums(n, 0);
-    for(int i = 0; i<n; i++){
-        nums[i] = i;
-    }
     vector<set<int>> cangoto(n, set<int>());
     for(int i = 0; i<n; i++){
+        nums[i] = i;
         cangoto[i].emplace(i);
     }
     for(int i = 0; i<k; i++){
@@ -23,11 +21,9 @@ int main(){
     int count = n;
     vector<bool> istrue(n, true);
     vector<int> cur(n, 0);
-    for(int i = 0; i<n; i++){
-        cur[i] = nums[i];
-    }
     vector<int> lastsize(n, 0);
     for(int i = 0; i<n; i++){
+        cur[i] = nums[i];
         lastsize[i] = cangoto[i].size();
     }
     while(count > 0){
