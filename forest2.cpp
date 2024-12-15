@@ -26,6 +26,29 @@ int main(){
             cin >> a >> b >> x;
             rules[i] = {a, b, x};
         }
+        sort(rules.begin(), rules.end(), [](const rule&a, const rule&b){
+            if(a.start != b.start){
+                return a.start < b.start;
+            }
+            return a.end < b.end;
+        });
+        set<int> compressed(loc.begin(), loc.end());
+        for(int i = 0; i<K; i++){
+            compressed.insert(rules[i].start);
+            compressed.insert(rules[i].end);
+        }
+        map<int, int> mapp;
+        int index = 0;
+        for(int k: compressed){
+            mapp[k] = index++;
+        }
+        for(int i = 0; i<N; i++){
+            loc[i] = mapp[loc[i]];
+        }
+        for(int i = 0; i<K; i++){
+            rules[i].start = mapp[rules[i].start];
+            rules[i].end = mapp[rules[i].end];
+        }
         
     }
 }
