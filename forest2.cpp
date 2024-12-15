@@ -10,25 +10,20 @@ void setIO(string file = "") {
 struct rule{
     int start, end, min;
 };
-bool works(vector<int> up, vector<rule> rules){
-    for(int i = 0; i<rules.size(); i++){
-        int a = *lower_bound(up.begin(), up.end(), rules[i].start);
-        int b = *upper_bound(up.begin(), up.end(), rules[i].end)-1;
-        if(b - a + 1 < rules[i].min) return false;
-    }
-    return true;
-}
+vector<int> loc;
+vector<rule> rules;
 int T, N, K;
 int main(){
+    setIO();
     cin >> T;
     while(T--){
         cin >> N >> K;
-        vector<int> loc(N);
+        loc.assign(N, 0);
         for(int i = 0; i<N; i++){
             cin >> loc[i];
         }
         sort(loc.begin(), loc.end());
-        vector<rule> rules;
+        rules.assign(K, {0, 0, 0});
         for(int i = 0; i<K; i++){
             int a, b, x;
             cin >> a >> b >> x;
@@ -40,8 +35,8 @@ int main(){
             }
             return a.end < b.end;
         });
-        //coordinate compression
         set<int> compressed(loc.begin(), loc.end());
+        vector<int> nums;
         for(int i = 0; i<K; i++){
             compressed.insert(rules[i].start);
             compressed.insert(rules[i].end);
@@ -50,6 +45,7 @@ int main(){
         int index = 0;
         for(int k: compressed){
             mapp[k] = index++;
+            nums.push_back(k);
         }
         for(int i = 0; i<N; i++){
             loc[i] = mapp[loc[i]];
@@ -58,8 +54,38 @@ int main(){
             rules[i].start = mapp[rules[i].start];
             rules[i].end = mapp[rules[i].end];
         }
-        //recursively check if it should be up or down.
-        int min = INT_MAX;
-        
+        vector<vector<int>> add(2*compressed.size() + 2);
+        vector<vector<int>> remove(2*compressed.size() + 2);
+        for(int i = 0; i<K; i++){
+            int a = *lower_bound(nums.begin(), nums.end(), rules[K].start);
+            int b = *lower_bound(nums.begin(), nums.end(), rules[K].end);
+            add[2*a].push_back(i);
+            remove[2*b+1].push_back(i);
+        }
+        vector<int> needmax(2*compressed.size()+2, 0);
+        set<int> maxs;
+        for(int i = 0; i<2*compressed.size()+2; i++){
+            maxs.insert(add[2*i].begin(), add[2*i].end());
+            for(int j  = 0; j<remove[2*i+1].size(); j++){
+                maxs.erase(remove[2*i+1][j]);
+            }
+            int size = 0;
+            for(int k: maxs){
+                size = max(size, rules[k].min);
+            }
+            needmax[i] = size;
+        }
+        int max = 0;
+        int ans = 0;
+        max = needmax[0];
+        for(int i = 1; i<needmax.size(); i++){
+            if(needmax[i] < needmax[i-1]){
+                ans += max;
+            }
+            else{
+                max = needmax[i];
+            }
+        }
+        cout << ans << endl;
     }
 }
