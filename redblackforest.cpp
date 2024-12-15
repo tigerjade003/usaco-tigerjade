@@ -47,32 +47,50 @@ int main(){
         for(int i = 0; i<N; i++){
             loc[i] = mapp[loc[i]];
         }
-        vector<int> prefix(compressed.size()+1, 0);
-        vector<bool> howmany(K, 0);
+        vector<vector<int>> add(compressed.size()+1, vector<int>());
+        vector<vector<int>> remove(compressed.size()+1, vector<int>());
+        vector<int> howmany(K, 0);
         for(int i = 0; i<K; i++){
             rules[i].start = mapp[rules[i].start];
             rules[i].end = mapp[rules[i].end];
-            prefix[rules[i].start]++;
-            prefix[rules[i].end + 1] --;
-            howmany[i] = rules[i].min;
+            add[rules[i].start].push_back(i);
+            remove[rules[i].end+1].push_back(i);
+            howmany[i] = upper_bound(loc.begin(), loc.end(), rules[i].end) - lower_bound(loc.begin(), loc.end(), rules[i].start);
         }
-        //try determining what trees can be cut, startin from the ones with the least rules affecting it.
-        for(int i = 1; i<compressed.size(); i++){
-            prefix[i] += prefix[i-1];
+        vector<set<int>> current(compressed.size()+1, set<int>());
+        set<int> running;
+        for(int i = 0; i<compressed.size()+1; i++){
+            running.insert(add[i].begin(), add[i].end());
+            for(int ruleIndex: remove[i]){
+                running.erase(running.find(rules[ruleIndex].min));
+            }
+            current[i] = running;
         }
         vector<pair<int, int>> trees;
         for(int i = 0; i<loc.size(); i++){
-            trees.push_back({prefix[loc[i]], loc[i]});
+            trees.push_back({current[loc[i]].size(), loc[i]});
         }
         sort(trees.begin(), trees.end());
         //now go through trees, see if each one is needed.
         int ans = 0;
-       
         vector<bool> isup(N, true);
         for(auto &[a, b]: trees){
             if(a == 0){
-
+                ans++;
+            }
+            else{
+                int minleeway = INT_MAX;
+                for(int i: current[b]){
+                    minleeway = min(minleeway, howmany[i] - rules[i].min);
+                }
+                if(minleeway > 0){
+                    for(int i: current[b]){
+                        howmany[i] -= 1;
+                    }
+                    ans++;
+                }
             }
         }
+        cout << ans << endl;
     }
 }
