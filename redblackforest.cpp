@@ -47,23 +47,32 @@ int main(){
         for(int i = 0; i<N; i++){
             loc[i] = mapp[loc[i]];
         }
+        vector<int> prefix(compressed.size()+1, 0);
+        vector<bool> howmany(K, 0);
         for(int i = 0; i<K; i++){
             rules[i].start = mapp[rules[i].start];
             rules[i].end = mapp[rules[i].end];
+            prefix[rules[i].start]++;
+            prefix[rules[i].end + 1] --;
+            howmany[i] = rules[i].min;
         }
-        /*
-        int min = 1, max = N, answer = 0;
-        while(min <= max){
-            int mid = (min + max)/2;
-            if(works(mid, loc, rules)){
-                answer = mid;
-                max = mid - 1;
-            }
-            else{
-                min = mid+1;
+        //try determining what trees can be cut, startin from the ones with the least rules affecting it.
+        for(int i = 1; i<compressed.size(); i++){
+            prefix[i] += prefix[i-1];
+        }
+        vector<pair<int, int>> trees;
+        for(int i = 0; i<loc.size(); i++){
+            trees.push_back({prefix[loc[i]], loc[i]});
+        }
+        sort(trees.begin(), trees.end());
+        //now go through trees, see if each one is needed.
+        int ans = 0;
+       
+        vector<bool> isup(N, true);
+        for(auto &[a, b]: trees){
+            if(a == 0){
+
             }
         }
-        cout << N-answer << endl;*/
-        
     }
 }
