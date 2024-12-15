@@ -12,9 +12,7 @@ vector<vector<short>> grid;//0 is unused, 1 is up, 2 is down, 3 is left, 4 is ri
 vector<vector<bool>> unusable; //true if unusable, false if usable
 vector<pair<short, short>> unuse;
 vector<vector<bool>> donotch;
-int ans;
 vector<vector<bool>> visited;
-bool found = false;
 bool isuse = false;
 void dfs(int x, int y){
     if(isuse) return;
@@ -22,6 +20,7 @@ void dfs(int x, int y){
         isuse = true;
         return;
     }
+    if(visited[x][y]) return;
     visited[x][y] = true;
     if(grid[x][y] != 0){
         int x1 = x;
@@ -48,7 +47,7 @@ void dfs(int x, int y){
     }
 }
 void mark(int a, int b){
-    if(a < 0 || b < 0 || a >= N || b >= N|| visited[a][b] || !unusable[a][b]) return;
+    if(a < 0 || b < 0 || a >= N || b >= N|| visited[a][b] || unusable[a][b]) return;
     unusable[a][b] = true;
     unuse.push_back({a, b});
     visited[a][b] = true;
@@ -87,11 +86,23 @@ void checkall(){
     while(!needcheck.empty()){
         auto &e = needcheck.front();
         needcheck.pop_front();
-        if(donotch[e.first][e.second] || unusable[e.first][e.second]){
+        if(e.first <= 0 || e.second <= 0 || e.first >= N-1 || e.second >= N-1 || donotch[e.first][e.second]){
+            continue;
+        }
+        if(unusable[e.first][e.second]){
+            if(unusable[e.first+1][e.second] && unusable[e.first-1][e.second] && unusable[e.first][e.second+1] && unusable[e.first][e.second-1]){
+                donotch[e.first][e.second] = true;
+            }
             continue;
         }
         else{
-            
+            visited.assign(N, vector<bool>(N, false));
+            isuse = false;
+            dfs(e.first, e.second);
+            if(!isuse){
+                visited.assign(N, vector<bool>(N, false));
+                mark(e.first,e.second);
+            }
         }
     }
 }
