@@ -16,36 +16,30 @@ vector<vector<int>> visited;
 vector<pair<short, short>> check;
 int runnum = 0;
 bool isuse = false;
-void dfs(int x, int y){
-    if(isuse) return;
-    if(x < 0 || y < 0 || x >= N || y >= N) {
-        isuse = true;
-        return;
-    }
-    if(visited[x][y] == runnum) return;
-    visited[x][y] = runnum;
-    if(grid[x][y] != 0){
-        int x1 = x;
-        int y1 = y;
-        if(grid[x][y] == 1){
-            x1--;
+void dfs(int x, int y) {
+    stack<pair<int, int>> s;
+    s.push({x, y});
+    while (!s.empty() && !isuse) {
+        auto [cx, cy] = s.top(); s.pop();
+        if (cx < 0 || cy < 0 || cx >= N || cy >= N) {
+            isuse = true;
+            continue;
         }
-        else if(grid[x][y] == 2){
-            x1++;
+        if (visited[cx][cy] == runnum) continue;
+        visited[cx][cy] = runnum;
+        if (grid[cx][cy] != 0) {
+            int nx = cx, ny = cy;
+            if (grid[cx][cy] == 1) nx--;
+            else if (grid[cx][cy] == 2) nx++;
+            else if (grid[cx][cy] == 3) ny--;
+            else if (grid[cx][cy] == 4) ny++;
+            s.push({nx, ny});
+        } else {
+            s.push({cx + 1, cy});
+            s.push({cx - 1, cy});
+            s.push({cx, cy + 1});
+            s.push({cx, cy - 1});
         }
-        else if(grid[x][y] == 3){
-            y1--;
-        }
-        else if(grid[x][y] == 4){
-            y1++;
-        }
-        dfs(x1, y1);
-    }
-    else{
-        dfs(x+1, y);
-        dfs(x-1, y);
-        dfs(x, y-1);
-        dfs(x, y+1);
     }
 }
 void mark(int a, int b){
