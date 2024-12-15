@@ -12,7 +12,9 @@ vector<vector<short>> grid;//0 is unused, 1 is up, 2 is down, 3 is left, 4 is ri
 vector<vector<bool>> unusable; //true if unusable, false if usable
 vector<pair<short, short>> unuse;
 vector<vector<bool>> donotch;
-vector<vector<bool>> visited;
+vector<vector<int>> visited;
+vector<pair<short, short>> check;
+int runnum = 0;
 bool isuse = false;
 void dfs(int x, int y){
     if(isuse) return;
@@ -20,8 +22,8 @@ void dfs(int x, int y){
         isuse = true;
         return;
     }
-    if(visited[x][y]) return;
-    visited[x][y] = true;
+    if(visited[x][y] == runnum) return;
+    visited[x][y] = runnum;
     if(grid[x][y] != 0){
         int x1 = x;
         int y1 = y;
@@ -47,10 +49,11 @@ void dfs(int x, int y){
     }
 }
 void mark(int a, int b){
-    if(a < 0 || b < 0 || a >= N || b >= N|| visited[a][b] || unusable[a][b]) return;
+    if(a < 0 || b < 0 || a >= N || b >= N|| visited[a][b] == runnum || unusable[a][b]) return;
     unusable[a][b] = true;
     unuse.push_back({a, b});
-    visited[a][b] = true;
+    check.push_back({a, b});
+    visited[a][b] = runnum;
     if(grid[a][b] != 0){
         int x1 = a;
         int y1 = b;
@@ -77,18 +80,23 @@ void mark(int a, int b){
 }
 void checkall(){
     deque<pair<int, int>> needcheck;
-    for(auto &q: unuse){
-        needcheck.push_back({q.first+1, q.second});
-        needcheck.push_back({q.first-1, q.second});
-        needcheck.push_back({q.first, q.second+1});
-        needcheck.push_back({q.first, q.second-1});
+    for(auto &q: check){
+        if(q.first + 1 < N-1 && !donotch[q.first+1][q.second]){
+            needcheck.push_back({q.first+1, q.second});
+        }
+        if(q.first-1 > 0 && !donotch[q.first-1][q.second]){
+            needcheck.push_back({q.first-1, q.second});
+        }
+        if(q.second + 1 < N-1 && !donotch[q.first][q.second+1]){
+            needcheck.push_back({q.first, q.second+1});
+        }
+        if(q.second-1 > 0 && !donotch[q.first][q.second-1]){
+            needcheck.push_back({q.first, q.second-1});
+        }
     }
     while(!needcheck.empty()){
         auto &e = needcheck.front();
         needcheck.pop_front();
-        if(e.first <= 0 || e.second <= 0 || e.first >= N-1 || e.second >= N-1 || donotch[e.first][e.second]){
-            continue;
-        }
         if(unusable[e.first][e.second]){
             if(unusable[e.first+1][e.second] && unusable[e.first-1][e.second] && unusable[e.first][e.second+1] && unusable[e.first][e.second-1]){
                 donotch[e.first][e.second] = true;
@@ -96,11 +104,11 @@ void checkall(){
             continue;
         }
         else{
-            visited.assign(N, vector<bool>(N, false));
+            runnum++;
             isuse = false;
             dfs(e.first, e.second);
             if(!isuse){
-                visited.assign(N, vector<bool>(N, false));
+                runnum++;
                 mark(e.first,e.second);
             }
         }
@@ -112,6 +120,7 @@ int main(){
     grid.assign(N, vector<short>(N, 0));
     unusable.assign(N, vector<bool>(N, false));
     donotch.assign(N, vector<bool>(N, false));
+    visited.assign(N, vector<int>(N, -1));
     for(int i = 0; i<Q; i++){
         short a, b;
         char c;
@@ -133,12 +142,12 @@ int main(){
             dir = 3;
         }
         grid[a][b] = dir;
-        visited.assign(N, vector<bool>(N, false));
         isuse = false;
-        //first dfs and find if it is usable or not.
+        runnum++;
         dfs(a, b);
         if(!isuse){
-            visited.assign(N, vector<bool>(N, false));
+            runnum++;
+            check.clear();
             mark(a, b);
             checkall();
         }
