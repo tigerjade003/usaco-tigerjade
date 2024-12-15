@@ -13,15 +13,12 @@ vector<vector<bool>> unusable; //true if unusable, false if usable
 vector<pair<short, short>> unuse;
 vector<vector<bool>> donotch;
 int ans;
-struct belt{
-    short x, y, dir;
-};
-vector<belt> belts;
 vector<vector<bool>> visited;
 bool found = false;
 bool dfs(int x, int y){
-    if(x < 0 || y < 0 || x >= N || y >= N || grid[x][y] == 0) return false;
+    if(x < 0 || y < 0 || x >= N || y >= N) return false;
     if(visited[x][y] || unusable[x][y]) return true;
+    if(x == 0 || y == 0 || x == N || y == N) return false;
     visited[x][y] = true;
     int x1 = x;
     int y1 = y;
@@ -76,6 +73,8 @@ void look(int x, int y){
 void mark2(int x, int y){
     if(x < 0 || y < 0 || x >= N || y >= N || unusable[x][y]) return;
     unusable[x][y] = true;
+    unuse.push_back({x, y});
+    donotch[x][y] = true;
     mark2(x-1,y);
     mark2(x+1, y);
     mark2(x, y-1);
@@ -117,7 +116,6 @@ int main(){
     setIO();
     cin >> N >> Q;
     grid.assign(N, vector<short>(N, 0));
-    belts.assign(Q, {0, 0, 0});
     unusable.assign(N, vector<bool>(N, false));
     donotch.assign(N, vector<bool>(N, false));
     for(int i = 0; i<Q; i++){
