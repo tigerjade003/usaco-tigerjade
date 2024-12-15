@@ -62,7 +62,7 @@ int main(){
         for(int i = 0; i<compressed.size()+1; i++){
             running.insert(add[i].begin(), add[i].end());
             for(int ruleIndex: remove[i]){
-                running.erase(running.find(rules[ruleIndex].min));
+                running.erase(running.find(ruleIndex));
             }
             current[i] = running;
         }
@@ -71,7 +71,6 @@ int main(){
             trees.push_back({current[loc[i]].size(), loc[i]});
         }
         sort(trees.begin(), trees.end());
-        //now go through trees, see if each one is needed.
         int ans = 0;
         vector<bool> isup(N, true);
         for(auto &[a, b]: trees){
