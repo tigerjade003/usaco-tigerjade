@@ -46,7 +46,7 @@ int main(){
         }
         for(int i = 0; i<N; i++){
             loc[i] = mapp[loc[i]];
-        }
+        } 
         vector<vector<int>> add(compressed.size()+1, vector<int>());
         vector<vector<int>> remove(compressed.size()+1, vector<int>());
         vector<int> howmany(K, 0);
@@ -55,7 +55,7 @@ int main(){
             rules[i].end = mapp[rules[i].end];
             add[rules[i].start].push_back(i);
             remove[rules[i].end+1].push_back(i);
-            howmany[i] = upper_bound(loc.begin(), loc.end(), rules[i].end) - lower_bound(loc.begin(), loc.end(), rules[i].start);
+            howmany[i] = upper_bound(loc.begin(), loc.end(), rules[i].end) - lower_bound(loc.begin(), loc.end(), rules[i].start) - rules[i].min;
         }
         vector<set<int>> current(compressed.size()+1, set<int>());
         set<int> running;
@@ -80,7 +80,7 @@ int main(){
             else{
                 int minleeway = INT_MAX;
                 for(int i: current[b]){
-                    minleeway = min(minleeway, howmany[i] - rules[i].min);
+                    minleeway = min(minleeway, howmany[i]);
                 }
                 if(minleeway > 0){
                     for(int i: current[b]){

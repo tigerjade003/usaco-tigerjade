@@ -15,37 +15,6 @@ struct rule {
     int start, end, min;
 };
 
-// Fenwick Tree (Binary Indexed Tree) for range queries and updates
-struct FenwickTree {
-    vector<int> tree;
-    FenwickTree(int n) {
-        tree.assign(n + 1, 0);  // 1-indexed Fenwick Tree
-    }
-
-    // Update the Fenwick Tree at index idx by delta
-    void update(int idx, int delta) {
-        while (idx < tree.size()) {
-            tree[idx] += delta;
-            idx += idx & -idx;  // Move to parent node
-        }
-    }
-
-    // Query the sum from index 1 to idx
-    int query(int idx) {
-        int sum = 0;
-        while (idx > 0) {
-            sum += tree[idx];
-            idx -= idx & -idx;  // Move to parent node
-        }
-        return sum;
-    }
-
-    // Query the sum from index left to right
-    int rangeQuery(int left, int right) {
-        return query(right) - query(left - 1);
-    }
-};
-
 int T, N, K;
 
 signed main() {
@@ -77,7 +46,7 @@ signed main() {
         vector<int> nums(compressed.begin(), compressed.end());
         map<int, int> mapp;
         for (int i = 0; i < nums.size(); i++) {
-            mapp[nums[i]] = i + 1;  // 1-indexed for Fenwick Tree
+            mapp[nums[i]] = i + 1;  // 1-indexed for ease of use
         }
 
         // Map locations to compressed coordinates
@@ -85,69 +54,61 @@ signed main() {
             loc[i] = mapp[loc[i]];
         }
 
-        // Initialize Fenwick Tree for rule counting
-        FenwickTree fenwick(nums.size());
+        // Initialize rule contribution for each tree
+        vector<int> ruleImpact(K, 0);
+        vector<int> treeImpact(N, 0);
 
-        // Set up how many trees satisfy each rule
-        vector<vector<int>> add(nums.size() + 1);
-        vector<vector<int>> remove(nums.size() + 1);
+        // Track which rules each tree affects
+        vector<vector<int>> affectedRules(N);
 
-        // Fill add/remove information for the rules
         for (int i = 0; i < K; i++) {
-            rules[i].start = mapp[rules[i].start];
-            rules[i].end = mapp[rules[i].end];
-            add[rules[i].start].push_back(i);
-            remove[rules[i].end + 1].push_back(i);
-        }
-
-        // Maintain current rule fulfillments using Fenwick Tree
-        vector<int> howmany(K, 0);  // Declare howmany to track the number of trees satisfying each rule
-
-        // Precompute the impact of each tree on rules
-        for (int i = 0; i < N; i++) {
-            for (int j : add[loc[i]]) {
-                howmany[j]++;  // Increment how many trees fulfill the rule
+            // Mark all trees affected by each rule
+            for (int j = 0; j < N; j++) {
+                if (loc[j] >= mapp[rules[i].start] && loc[j] <= mapp[rules[i].end]) {
+                    affectedRules[j].push_back(i);
+                    ruleImpact[i]++;
+                }
             }
         }
 
-        // Sort trees based on the number of rules they help fulfill (descending)
-        vector<pair<int, int>> trees;
+        // Sort trees based on how many rules they help fulfill (descending)
+        vector<pair<int, int>> trees;  // (impact, treeIndex)
         for (int i = 0; i < N; i++) {
-            trees.push_back({howmany[i], loc[i]});
+            trees.push_back({affectedRules[i].size(), i});
         }
         sort(trees.begin(), trees.end(), greater<pair<int, int>>());
 
-        // Now, greedily choose trees to remove based on their impact
-        int ans = 0;
-        vector<bool> isup(N, true);
+        // Greedily remove trees
+        int removedTrees = 0;
+        vector<bool> isTreeRemoved(N, false);
 
-        // Iterate over the sorted trees
-        for (auto &[impact, treeLoc] : trees) {
-            int treeIndex = treeLoc;
-
-            // If this tree is currently fulfilling no rule, we remove it
+        for (auto &[impact, treeIndex] : trees) {
             if (impact == 0) {
-                ans++;
-                continue;
+                break;
             }
 
-            int minleeway = INT_MAX;
-
-            // Check the minimum leeway for the rules affected by this tree
-            for (int ruleIndex : add[treeLoc]) {
-                minleeway = min(minleeway, howmany[ruleIndex] - rules[ruleIndex].min);
-            }
-
-            // If this tree is helpful, we "cut" it and update the rule fulfillments
-            if (minleeway > 0) {
-                for (int ruleIndex : add[treeLoc]) {
-                    howmany[ruleIndex] -= 1;  // Update the count for rules
+            // Check if we can remove this tree without violating any rules
+            bool canRemove = true;
+            for (int ruleIndex : affectedRules[treeIndex]) {
+                if (ruleImpact[ruleIndex] <= rules[ruleIndex].min) {
+                    canRemove = false;
+                    break;
                 }
-                ans++;
+            }
+
+            if (canRemove) {
+                // Remove the tree and update rule impact
+                isTreeRemoved[treeIndex] = true;
+                removedTrees++;
+
+                // Update the rule impacts (decrease for the affected rules)
+                for (int ruleIndex : affectedRules[treeIndex]) {
+                    ruleImpact[ruleIndex]--;
+                }
             }
         }
 
-        cout << ans << endl;
+        cout << removedTrees << endl;
     }
 
     return 0;
