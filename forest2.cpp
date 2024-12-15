@@ -10,7 +10,15 @@ void setIO(string file = "") {
 struct rule{
     int start, end, min;
 };
-int T, N, K; vector<int> loc;
+bool works(vector<int> up, vector<rule> rules){
+    for(int i = 0; i<rules.size(); i++){
+        int a = *lower_bound(up.begin(), up.end(), rules[i].start);
+        int b = *upper_bound(up.begin(), up.end(), rules[i].end)-1;
+        if(b - a + 1 < rules[i].min) return false;
+    }
+    return true;
+}
+int T, N, K;
 int main(){
     cin >> T;
     while(T--){
@@ -32,6 +40,7 @@ int main(){
             }
             return a.end < b.end;
         });
+        //coordinate compression
         set<int> compressed(loc.begin(), loc.end());
         for(int i = 0; i<K; i++){
             compressed.insert(rules[i].start);
@@ -49,6 +58,8 @@ int main(){
             rules[i].start = mapp[rules[i].start];
             rules[i].end = mapp[rules[i].end];
         }
+        //recursively check if it should be up or down.
+        int min = INT_MAX;
         
     }
 }
