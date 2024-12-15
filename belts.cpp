@@ -19,7 +19,7 @@ vector<belt> belts;
 vector<vector<bool>> visited;
 bool dfs(int x, int y){
     if(x < 0 || y < 0 || x >= N || y >= N || grid[x][y] == 0) return false;
-    if(visited[x][y]) return true;
+    if(visited[x][y] || unusable[x][y]) return true;
     visited[x][y] = true;
     int x1 = x;
     int y1 = y;
@@ -37,6 +37,25 @@ bool dfs(int x, int y){
     }
     return dfs(x1, y1);
 }
+void mark(int x, int y){
+    if(x < 0 || y < 0 || x >= N || y >= N || unusable[x][y]) return;
+    unusable[x][y] = true;
+    int x1 = x;
+    int y1 = y;
+    if(grid[x][y] == 1){
+        y1--;
+    }
+    else if(grid[x][y] == 2){
+        y1++;
+    }
+    else if(grid[x][y] == 3){
+        x1--;
+    }
+    else{
+        x1++;
+    }
+    mark(x1, y1);
+}
 int main(){
     setIO();
     cin >> N >> Q;
@@ -45,6 +64,31 @@ int main(){
     for(int i = 0; i<N; i++){
         short a, b;
         char c;
+        cin >> a >> b;
+        cin >> c;
+        int dir;
+        a--;
+        b--;
+        if(c == 'U'){
+            dir = 1;
+        }
+        else if(c == 'D'){
+            dir = 2;
+        }
+        else if(c == 'R'){
+            dir = 4;
+        }
+        else{
+            dir = 3;
+        }
+        grid[a][b] = dir;
+        visited.assign(N, vector<bool>(N, false));
+        //first dfs and find if it is usable or not.
+        bool use = dfs(a, b);
+        //if not, mark unusable and increase counter.
+        if(!use){
+            mark(a, b);
+        }
         
     }
 }
