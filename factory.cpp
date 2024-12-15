@@ -49,12 +49,10 @@ void mark(int a, int b) {
     while (!q.empty()) {
         auto [x, y] = q.front(); q.pop();
         if (x < 0 || y < 0 || x >= N || y >= N || visited[x][y] == runnum || unusable[x][y]) continue;
-
         unusable[x][y] = true;
         unuse.push_back({x, y});
         check.push_back({x, y});
         visited[x][y] = runnum;
-
         if (grid[x][y] != 0) {
             int nx = x, ny = y;
             if (grid[x][y] == 1) nx--;
@@ -70,7 +68,6 @@ void mark(int a, int b) {
         }
     }
 }
-
 void checkall(){
     deque<pair<int, int>> needcheck;
     for(auto &q: check){
