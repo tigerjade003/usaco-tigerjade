@@ -27,6 +27,7 @@ void dfs(int x, int y) {
         }
         if (visited[cx][cy] == runnum) continue;
         visited[cx][cy] = runnum;
+
         if (grid[cx][cy] != 0) {
             int nx = cx, ny = cy;
             if (grid[cx][cy] == 1) nx--;
@@ -42,55 +43,48 @@ void dfs(int x, int y) {
         }
     }
 }
-void mark(int a, int b){
-    if(a < 0 || b < 0 || a >= N || b >= N|| visited[a][b] == runnum || unusable[a][b]) return;
-    unusable[a][b] = true;
-    unuse.push_back({a, b});
-    check.push_back({a, b});
-    visited[a][b] = runnum;
-    if(grid[a][b] != 0){
-        int x1 = a;
-        int y1 = b;
-        if(grid[a][b] == 1){
-            x1--;
+void mark(int a, int b) {
+    queue<pair<int, int>> q;
+    q.push({a, b});
+    while (!q.empty()) {
+        auto [x, y] = q.front(); q.pop();
+        if (x < 0 || y < 0 || x >= N || y >= N || visited[x][y] == runnum || unusable[x][y]) continue;
+
+        unusable[x][y] = true;
+        unuse.push_back({x, y});
+        check.push_back({x, y});
+        visited[x][y] = runnum;
+
+        if (grid[x][y] != 0) {
+            int nx = x, ny = y;
+            if (grid[x][y] == 1) nx--;
+            else if (grid[x][y] == 2) nx++;
+            else if (grid[x][y] == 3) ny--;
+            else if (grid[x][y] == 4) ny++;
+            q.push({nx, ny});
+        } else {
+            q.push({x + 1, y});
+            q.push({x - 1, y});
+            q.push({x, y + 1});
+            q.push({x, y - 1});
         }
-        else if(grid[a][b] == 2){
-            x1++;
-        }
-        else if(grid[a][b] == 3){
-            y1--;
-        }
-        else if(grid[a][b] == 4){
-            y1++;
-        }
-        mark(x1, y1);
-    }
-    else{
-        mark(a+1, b);
-        mark(a-1, b);
-        mark(a, b-1);
-        mark(a, b+1);
     }
 }
+
 void checkall(){
     deque<pair<int, int>> needcheck;
     for(auto &q: check){
-        if(q.first + 1 < N-1 && !donotch[q.first+1][q.second]){
-            needcheck.push_back({q.first+1, q.second});
-        }
-        if(q.first-1 > 0 && !donotch[q.first-1][q.second]){
-            needcheck.push_back({q.first-1, q.second});
-        }
-        if(q.second + 1 < N-1 && !donotch[q.first][q.second+1]){
-            needcheck.push_back({q.first, q.second+1});
-        }
-        if(q.second-1 > 0 && !donotch[q.first][q.second-1]){
-            needcheck.push_back({q.first, q.second-1});
-        }
+        needcheck.push_back({q.first+1, q.second});
+        needcheck.push_back({q.first-1, q.second});
+        needcheck.push_back({q.first, q.second+1});
+        needcheck.push_back({q.first, q.second-1});
     }
     while(!needcheck.empty()){
         auto &e = needcheck.front();
         needcheck.pop_front();
+        if(e.first <= 0 || e.second <= 0 || e.first >= N-1 || e.second >= N-1 || donotch[e.first][e.second]){
+            continue;
+        }
         if(unusable[e.first][e.second]){
             if(unusable[e.first+1][e.second] && unusable[e.first-1][e.second] && unusable[e.first][e.second+1] && unusable[e.first][e.second-1]){
                 donotch[e.first][e.second] = true;
