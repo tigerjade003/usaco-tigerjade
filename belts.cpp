@@ -16,8 +16,9 @@ int ans;
 vector<vector<bool>> visited;
 bool found = false;
 bool dfs(int x, int y){
+
     if(x < 0 || y < 0 || x >= N || y >= N) return false;
-    if(visited[x][y] || unusable[x][y]) return true;
+    if(visited[x][y]&& (x != 0 && y != 0 && x != N && y != N) || unusable[x][y]) return true;
     if(x == 0 || y == 0 || x == N || y == N) return false;
     visited[x][y] = true;
     int x1 = x;
