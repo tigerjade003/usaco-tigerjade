@@ -27,7 +27,6 @@ void dfs(int x, int y) {
         }
         if (visited[cx][cy] == runnum) continue;
         visited[cx][cy] = runnum;
-
         if (grid[cx][cy] != 0) {
             int nx = cx, ny = cy;
             if (grid[cx][cy] == 1) nx--;
@@ -60,6 +59,28 @@ void mark(int a, int b) {
             else if (grid[x][y] == 3) ny--;
             else if (grid[x][y] == 4) ny++;
             q.push({nx, ny});
+            vector<int> dx = {0, 0, 1, -1};
+            vector<int> dy = {1, -1, 0, 0};
+            nx = x, ny = y;
+            for(int i = 0; i<4; i++){
+                nx += dx[i];
+                ny += dy[i];
+                if(nx >= 0 && ny >= 0 && nx < N && ny < N){
+                    if(grid[nx][ny] != 0){
+                        int curx = nx, cury = ny;
+                        if (grid[curx][cury] == 1) curx--;
+                        else if (grid[curx][cury] == 2) curx++;
+                        else if (grid[curx][cury] == 3) cury--;
+                        else if (grid[curx][cury] == 4) cury++;
+                        if(curx == x && cury == y){
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+                nx -= dx[i];
+                ny -= dy[i];
+            }
+            
         } else {
             q.push({x + 1, y});
             q.push({x - 1, y});
