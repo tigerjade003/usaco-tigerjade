@@ -57,17 +57,17 @@ int main(){
         vector<vector<int>> add(2*compressed.size() + 2);
         vector<vector<int>> remove(2*compressed.size() + 2);
         for(int i = 0; i<K; i++){
-            int a = *lower_bound(nums.begin(), nums.end(), rules[K].start);
-            int b = *lower_bound(nums.begin(), nums.end(), rules[K].end);
-            add[2*a].push_back(i);
-            remove[2*b+1].push_back(i);
+            add[2*rules[i].start].push_back(i);
+            remove[2*rules[i].end+1].push_back(i);
         }
         vector<int> needmax(2*compressed.size()+2, 0);
         set<int> maxs;
         for(int i = 0; i<2*compressed.size()+2; i++){
-            maxs.insert(add[2*i].begin(), add[2*i].end());
-            for(int j  = 0; j<remove[2*i+1].size(); j++){
-                maxs.erase(remove[2*i+1][j]);
+            if(i % 2 == 0) maxs.insert(add[i].begin(), add[i].end());
+            else{
+                for(int j  = 0; j<remove[i].size(); j++){
+                    maxs.erase(remove[i][j]);
+                }
             }
             int size = 0;
             for(int k: maxs){
