@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define endl '\n'
-#define int long long
-
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -10,106 +8,67 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-
-struct rule {
-    int start, end, min;
-};
-
 int T, N, K;
-
-signed main() {
+vector<int> locations;
+vector<pair<int, pair<int, int>>> rules;
+bool works(int canuse, int size){
+    int work = 0;
+    vector<int> prefix(size, 0);
+    vector<int> work(size, 0);
+    for(int i = 0; i<K; i++){
+        int thereare = prefix[rules[i].second.first] - prefix[rules[i].first];
+        int needed = rules[i].second.second - thereare;
+        canuse -= needed;
+        if(canuse < 0) return false;
+        //each time i plant a tree, work[i] increases. Then after planting them all I add the updates to prefix.
+        for(int j = rules[i].second.first; j >= )
+    }
+}
+int main(){
     setIO();
     cin >> T;
-
-    while (T--) {
+    while(T--){
         cin >> N >> K;
-        vector<int> loc(N);
-        vector<rule> rules(K);
-        set<int> compressed;
-
-        // Read locations of trees
-        for (int i = 0; i < N; i++) {
-            cin >> loc[i];
-            compressed.insert(loc[i]);
+        locations.assign(N, 0);
+        for(int i = 0; i<N; i++){
+            cin >> locations[i];
         }
-
-        // Read the rules
-        for (int i = 0; i < K; i++) {
-            int a, b, x;
-            cin >> a >> b >> x;
-            rules[i] = {a, b, x};
-            compressed.insert(a);
-            compressed.insert(b);
+        rules.assign(K, {0, {0, 0}});
+        for(int i = 0; i<K; i++){
+            int a, b, c;
+            cin >> a >> b >> c;
+            rules[i] = {a, {b, c}};
         }
-
-        // Compress the coordinates of the trees and rules
-        vector<int> nums(compressed.begin(), compressed.end());
-        map<int, int> mapp;
-        for (int i = 0; i < nums.size(); i++) {
-            mapp[nums[i]] = i + 1;  // 1-indexed for ease of use
+        sort(locations.begin(), locations.end());
+        sort(rules.begin(), rules.end());
+        set<int> compress(locations.begin(), locations.end());
+        for(int i = 0; i<K; i++){
+            compress.insert(rules[i].first);
+            compress.insert(rules[i].second.first);
         }
-
-        // Map locations to compressed coordinates
-        for (int i = 0; i < N; i++) {
-            loc[i] = mapp[loc[i]];
+        vector<int> nums(compress.begin(), compress.end());
+        map<int, int> maps;
+        for(int i = 0; i<compress.size(); i++){
+            maps[nums[i]] = i;
         }
-
-        // Initialize rule contribution for each tree
-        vector<int> ruleImpact(K, 0);
-        vector<int> treeImpact(N, 0);
-
-        // Track which rules each tree affects
-        vector<vector<int>> affectedRules(N);
-
-        for (int i = 0; i < K; i++) {
-            // Mark all trees affected by each rule
-            for (int j = 0; j < N; j++) {
-                if (loc[j] >= mapp[rules[i].start] && loc[j] <= mapp[rules[i].end]) {
-                    affectedRules[j].push_back(i);
-                    ruleImpact[i]++;
-                }
+        for(int i = 0; i<N; i++){
+            locations[i] = maps[locations[i]];
+        }
+        for(int i = 0; i<K; i++){
+            rules[i].first = maps[rules[i].first];
+            rules[i].second.first = maps[rules[i].second.first];
+        }
+        int min = 1, max = N, answer = 0;
+        while(min <= max){
+            int mid = (max  + min)/2;
+            if(works(mid, compress.size())){
+                max = mid-1;
+                answer = mid;
+            }
+            else{
+                min = mid+1;
             }
         }
-
-        // Sort trees based on how many rules they help fulfill (descending)
-        vector<pair<int, int>> trees;  // (impact, treeIndex)
-        for (int i = 0; i < N; i++) {
-            trees.push_back({affectedRules[i].size(), i});
-        }
-        sort(trees.begin(), trees.end(), greater<pair<int, int>>());
-
-        // Greedily remove trees
-        int removedTrees = 0;
-        vector<bool> isTreeRemoved(N, false);
-
-        for (auto &[impact, treeIndex] : trees) {
-            if (impact == 0) {
-                break;
-            }
-
-            // Check if we can remove this tree without violating any rules
-            bool canRemove = true;
-            for (int ruleIndex : affectedRules[treeIndex]) {
-                if (ruleImpact[ruleIndex] <= rules[ruleIndex].min) {
-                    canRemove = false;
-                    break;
-                }
-            }
-
-            if (canRemove) {
-                // Remove the tree and update rule impact
-                isTreeRemoved[treeIndex] = true;
-                removedTrees++;
-
-                // Update the rule impacts (decrease for the affected rules)
-                for (int ruleIndex : affectedRules[treeIndex]) {
-                    ruleImpact[ruleIndex]--;
-                }
-            }
-        }
-
-        cout << removedTrees << endl;
+        cout << N - answer << endl;
     }
-
-    return 0;
 }

@@ -12,13 +12,18 @@ struct rule{
     int start, end, min;
 };
 int T, N, K;
+vector<int> loc, nums;
+vector<rule> rules;
+vector<vector<int>> add, removes;
+vector<set<int>> current;
+vector<pair<int, int>> trees;
 int main(){
     setIO();
     cin >> T;
     while(T--){
         cin >> N >> K;
-        vector<int> loc(N);
-        vector<rule> rules(K);
+        loc.assign(N, 0);
+        rules.assign(K, {0, 0, 0});
         for(int i = 0; i<N; i++){
             cin >> loc[i];
         }
@@ -39,7 +44,7 @@ int main(){
             compressed.insert(r.start);
             compressed.insert(r.end);
         }
-        vector<int> nums(compressed.begin(), compressed.end());
+        nums.assign(compressed.begin(), compressed.end());
         map<int, int> mapp;
         for(int i = 0; i<nums.size(); i++){
             mapp[nums[i]] = i;
@@ -47,32 +52,31 @@ int main(){
         for(int i = 0; i<N; i++){
             loc[i] = mapp[loc[i]];
         } 
-        vector<vector<int>> add(compressed.size()+1, vector<int>());
-        vector<vector<int>> remove(compressed.size()+1, vector<int>());
+        add.assign(compressed.size() + 1, vector<int>());
+        removes.assign(compressed.size() + 1, vector<int>());
         vector<int> howmany(K, 0);
         for(int i = 0; i<K; i++){
             rules[i].start = mapp[rules[i].start];
             rules[i].end = mapp[rules[i].end];
             add[rules[i].start].push_back(i);
-            remove[rules[i].end+1].push_back(i);
+            removes[rules[i].end+1].push_back(i);
             howmany[i] = upper_bound(loc.begin(), loc.end(), rules[i].end) - lower_bound(loc.begin(), loc.end(), rules[i].start) - rules[i].min;
         }
-        vector<set<int>> current(compressed.size()+1, set<int>());
+        current.assign(compressed.size() + 1, set<int>());
         set<int> running;
         for(int i = 0; i<compressed.size()+1; i++){
             running.insert(add[i].begin(), add[i].end());
-            for(int ruleIndex: remove[i]){
+            for(int ruleIndex: removes[i]){
                 running.erase(running.find(ruleIndex));
             }
             current[i] = running;
         }
-        vector<pair<int, int>> trees;
+        trees.assign(N, {0, 0});
         for(int i = 0; i<loc.size(); i++){
-            trees.push_back({current[loc[i]].size(), loc[i]});
+            trees[i] = {current[loc[i]].size(), loc[i]};
         }
         sort(trees.begin(), trees.end());
         int ans = 0;
-        vector<bool> isup(N, true);
         for(auto &[a, b]: trees){
             if(a == 0){
                 ans++;
