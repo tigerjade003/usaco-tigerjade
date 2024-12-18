@@ -1,2 +1,2 @@
-ar>(N, '?'));
-    vector<int> answers;
+
+    grid.assign(N, vector<char>(N, '?'

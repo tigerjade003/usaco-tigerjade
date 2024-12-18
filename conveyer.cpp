@@ -1,30 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
-vector<vector<char>> grid;
+#define DEBUG true
+vector<vector<char>> grid; //L = y--, R = y++, D = x++, U = x--
 vector<vector<bool>> escapable;
 int N, Q;
 struct belt{
     int x, y;
 };
+void setIO(string file = "") {
+    cin.tie(0)->sync_with_stdio(0);
+    if (!file.empty()) {
+        freopen((file + ".in").c_str(), "r", stdin);
+        freopen((file + ".out").c_str(), "w", stdout);
+    }
+}
 int canescape = 0;
 void dfs(int a, int b){
-    canescape++;
     if(a < 0 || a >= N || b < 0 || b >= N || escapable[a][b]) return;
+    canescape++;
     escapable[a][b] = true;
-    if(a > 0 && (grid[a-1][b] == '?' || grid[a-1][b] == 'R')){
+    if(a > 0 && (grid[a-1][b] == '?' || grid[a-1][b] == 'D')){
         dfs(a-1, b);
     }
-    if(a < N-1 && (grid[a+1][b] == '?' || grid[a+1][b] == 'L')){
+    if(a < N-1 && (grid[a+1][b] == '?' || grid[a+1][b] == 'U')){
         dfs(a+1, b);
     }
-    if(b > 0 && (grid[a][b-1] == '?' || grid[a][b-1] == 'U')){
+    if(b > 0 && (grid[a][b-1] == '?' || grid[a][b-1] == 'R')){
         dfs(a, b-1);
     }
-    if(b < N-1 && (grid[a][b+1] == '?' || grid[a][b+1] == 'D')){
+    if(b < N-1 && (grid[a][b+1] == '?' || grid[a][b+1] == 'L')){
         dfs(a, b+1);
     }
 }
 int main(){
+    if (DEBUG) setIO("test");
+    else setIO();
     cin >> N >> Q;
     grid.assign(N, vector<char>(N, '?'));
     vector<int> answers;
@@ -38,9 +48,7 @@ int main(){
         grid[a][b] = c;
         belts[i] = {a, b};
     }
-    //now check all escapable cells;
     for(int i = 0; i < N; i++){
-        //check grid[i][0], grid[i][N-1], grid[0][i], and grid[N-1][i]
         if(!escapable[i][0] && (grid[i][0] == '?' || grid[i][0] == 'L')){
             dfs(i, 0);
         }
@@ -53,6 +61,7 @@ int main(){
         if((!escapable[N-1][i]) && (grid[N-1][i] == '?' || grid[N-1][i] == 'D')){
             dfs(N-1, i);
         }
+
     }
     answers.push_back(canescape);
     for(int i = Q-1; i>=0; i--){
@@ -64,7 +73,7 @@ int main(){
         }
         answers.push_back(canescape);
     }
-    for(int i = 1; i<answers.size(); i++){
+    for(int i = answers.size()-2; i>=0; i--){
         cout << (N * N) - answers[i] << endl;
     }
 }
