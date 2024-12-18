@@ -1,99 +1,70 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <numeric> 
 using namespace std;
-#define endl '\n'
-void setIO(string file = "") {
-    cin.tie(0)->sync_with_stdio(0);
-    if (!file.empty()) {
-        freopen((file + ".in").c_str(), "r", stdin);
-        freopen((file + ".out").c_str(), "w", stdout);
-    }
-}
-struct rule{
-    int start, end, min;
+
+struct Restriction {
+    int l, r, t; 
 };
-int T, N, K;
-vector<int> loc, nums;
-vector<rule> rules;
-vector<vector<int>> add, removes;
-vector<set<int>> current;
-vector<pair<int, int>> trees;
-int main(){
-    setIO();
-    cin >> T;
-    while(T--){
-        cin >> N >> K;
-        loc.assign(N, 0);
-        rules.assign(K, {0, 0, 0});
-        for(int i = 0; i<N; i++){
-            cin >> loc[i];
-        }
-        sort(loc.begin(), loc.end());
-        for(int i = 0; i<K; i++){
-            int a, b, x;
-            cin >> a >> b >> x;
-            rules[i] = {a, b, x};
-        }
-        sort(rules.begin(), rules.end(), [](const rule&a, const rule&b){
-            if(a.start != b.start){
-                return a.start < b.start;
-            }
-            return a.end < b.end;
-        });
-        set<int> compressed(loc.begin(), loc.end());
-        for(const auto &r: rules){
-            compressed.insert(r.start);
-            compressed.insert(r.end);
-        }
-        nums.assign(compressed.begin(), compressed.end());
-        map<int, int> mapp;
-        for(int i = 0; i<nums.size(); i++){
-            mapp[nums[i]] = i;
-        }
-        for(int i = 0; i<N; i++){
-            loc[i] = mapp[loc[i]];
-        } 
-        add.assign(compressed.size() + 1, vector<int>());
-        removes.assign(compressed.size() + 1, vector<int>());
-        vector<int> howmany(K, 0);
-        for(int i = 0; i<K; i++){
-            rules[i].start = mapp[rules[i].start];
-            rules[i].end = mapp[rules[i].end];
-            add[rules[i].start].push_back(i);
-            removes[rules[i].end+1].push_back(i);
-            howmany[i] = upper_bound(loc.begin(), loc.end(), rules[i].end) - lower_bound(loc.begin(), loc.end(), rules[i].start) - rules[i].min;
-        }
-        current.assign(compressed.size() + 1, set<int>());
-        set<int> running;
-        for(int i = 0; i<compressed.size()+1; i++){
-            running.insert(add[i].begin(), add[i].end());
-            for(int ruleIndex: removes[i]){
-                running.erase(running.find(ruleIndex));
-            }
-            current[i] = running;
-        }
-        trees.assign(N, {0, 0});
-        for(int i = 0; i<loc.size(); i++){
-            trees[i] = {current[loc[i]].size(), loc[i]};
-        }
-        sort(trees.begin(), trees.end());
-        int ans = 0;
-        for(auto &[a, b]: trees){
-            if(a == 0){
-                ans++;
-            }
-            else{
-                int minleeway = INT_MAX;
-                for(int i: current[b]){
-                    minleeway = min(minleeway, howmany[i]);
-                }
-                if(minleeway > 0){
-                    for(int i: current[b]){
-                        howmany[i] -= 1;
-                    }
-                    ans++;
+
+int solveTestCase(int n, int k, vector<int>& positions, vector<Restriction>& restrictions) {
+
+    sort(positions.begin(), positions.end());
+
+    vector<int> protected_trees(n, 0);
+
+    for (auto& res : restrictions) {
+
+        auto start_it = lower_bound(positions.begin(), positions.end(), res.l);
+        auto end_it = upper_bound(positions.begin(), positions.end(), res.r);
+
+        int start_idx = start_it - positions.begin();
+        int end_idx = end_it - positions.begin() - 1;
+
+        int already_protected = accumulate(protected_trees.begin() + start_idx, protected_trees.begin() + end_idx + 1, 0);
+
+        int needed = res.t - already_protected;
+        if (needed > 0) {
+            for (int i = start_idx; i <= end_idx && needed > 0; i++) {
+                if (protected_trees[i] == 0) {
+                    protected_trees[i] = 1;
+                    needed--;
                 }
             }
         }
-        cout << ans << endl;
     }
+
+    int total_protected = accumulate(protected_trees.begin(), protected_trees.end(), 0);
+
+    return n - total_protected;
+}
+
+int main() {
+    int T;
+    cin >> T;
+
+    vector<int> results;
+
+    while (T--) {
+        int n, k;
+        cin >> n >> k;
+
+        vector<int> positions(n);
+        for (int i = 0; i < n; i++) {
+            cin >> positions[i];
+        }
+
+        vector<Restriction> restrictions(k);
+        for (int i = 0; i < k; i++) {
+            cin >> restrictions[i].l >> restrictions[i].r >> restrictions[i].t;
+        }
+
+        results.push_back(solveTestCase(n, k, positions, restrictions));
+    }
+    for (int result : results) {
+        cout << result << endl;
+    }
+
+    return 0;
 }
