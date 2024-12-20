@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define DEBUG true
+#define DEBUG false
 vector<vector<char>> grid; //L = y--, R = y++, D = x++, U = x--
 vector<vector<bool>> escapable;
 int N, Q;
