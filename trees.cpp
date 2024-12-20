@@ -12,7 +12,7 @@ struct rule{
     int begin, end, min;
 };
 int N, Q;
-vector<int> locations;
+vector<int> locations, cutoff, existing;
 vector<rule> rules;
 void solve(){
     cin >> N >> Q;
@@ -25,10 +25,16 @@ void solve(){
     }
     sort(locations.begin(), locations.end());
     rules.assign(Q, {0, 0, 0});
+    cutoff.assign(N, 0);
+    existing.assign(N, 0);
     for(int i = 0; i<Q; i++){
-        
+        int a, b;
+        cin >> a >> b >> cutoff[i];
+        l *= 2;
+        r *= 2;
+        l--;
+        r--;
     }
-
 }
 int main(){
     int T;
