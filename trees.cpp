@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define DEBUG true
+#define DEBUG false
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -17,21 +17,18 @@ struct thing{
 bool comp(const thing &a, const thing &b){
     return a.x < b.x;
 }
-int N, Q;
-vector<int> locations, cutoff, existing;
-vector<rule> rules;
 void solve(){
+    vector<int> locations, cutoff, existing;
+    vector<rule> rules;
+    int N, Q;
     cin >> N >> Q;
-    locations.assign(N, 0);
     for(int i = 0; i<N; i++){
         int l;
         cin >> l;
         l *= 2;
-        locations[i] = l;
+        locations.push_back(l);
     }
-    sort(locations.begin(), locations.end());
-    rules.assign(Q, {0, 0, 0});
-    cutoff.assign(N, 0);
+    cutoff.assign(Q, 0);
     existing.assign(N, 0);
     for(int i = 0; i<Q; i++){
         int l, r;
@@ -42,10 +39,11 @@ void solve(){
         r++;
         rules.push_back({l, r, i});
     }
+    sort(locations.begin(), locations.end());
     for(auto rule: rules){
         auto a = lower_bound(locations.begin(), locations.end(), rule.end);
         auto b = lower_bound(locations.begin(), locations.end(), rule.begin);
-        cutoff[rule.id] -=  a - b;
+        cutoff[rule.id] -=  (a - b);
     }
     multiset<thing, decltype(&comp)> all(comp);
     for(int i = 0; i<N; i++){
@@ -59,7 +57,8 @@ void solve(){
     int ans = 0;
     vector<bool> done(Q, false);
     for(auto entry: all){
-        if(entry.val == 0){
+        auto [x, id, val] = entry;
+        if(val == 0){
             while(!pq.empty()){
                 auto [val, idx] = pq.top();
                 if(done[idx]) pq.pop();
@@ -76,13 +75,13 @@ void solve(){
             }
         }
         else{
-            if (entry.val == 1){
-                if(cutoff[entry.id] + ans <= 0){
-                    pq.push({cutoff[entry.id]-ans, entry.id});
+            if (val == 1){
+                if(cutoff[id] + ans <= 0){
+                    pq.push({cutoff[id]-ans, id});
                 }
             }
-            else if (entry.val == 2){
-                done[entry.id] = true;
+            else if (val == 2){
+                done[id] = true;
             }
         }
     }
@@ -95,6 +94,7 @@ int main(){
         setIO();
     }
     int T;
+    cin >> T;
     while(T--){
         solve();
     }
