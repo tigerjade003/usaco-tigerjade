@@ -89,6 +89,11 @@ void solve(){
     cout << ans << endl;
 }
 int main(){
+    if(DEBUG)
+        setIO("test");
+    else{
+        setIO();
+    }
     int T;
     while(T--){
         solve();
