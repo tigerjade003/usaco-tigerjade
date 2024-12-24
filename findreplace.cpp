@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -7,56 +8,89 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-//a = 97, z = 122, A = 65, Z = 92;
-int main(){
+int letterToNode(char letter) {
+    if ('a' <= letter && letter <= 'z') {
+        return letter - 'a';
+    } else {
+        return 26 + (letter - 'A');
+    }
+}
+
+int main() {
     setIO();
     int T;
     cin >> T;
-    while(T--){
-        string a, b;
-        cin >> a;
-        cin >> b;
-        vector<char> mapTo(52, 0);
-        bool works = true;
-        vector<bool> used(52, false);
-        int count = 0;
-        bool differ = 0;
-        for(int i = 0; i<a.size(); i++){
-            //lowercase a-z is 26-51
-            //uppercase A-Z is 0-25
-            int place = 0;
-            if(a[i] >= 97){
-                place = a[i] - 97 + 26; 
+    while (T--) {
+        string before, after;
+        cin >> before >> after;
+
+        vector<int> becomes(52, -1);
+        bool possible = true;
+        set<char> uniqueChars;
+
+        for (int j = 0; j < before.size(); ++j) {
+            int b = letterToNode(before[j]);
+            int a = letterToNode(after[j]);
+            uniqueChars.insert(after[j]);
+
+            if (becomes[b] != -1 && becomes[b] != a) {
+                possible = false;
             }
-            else{
-                place = a[i] - 65;
-            }
-            if(mapTo[place] != 0 && mapTo[place] != b[i]){
-                works = false;
-                break;
-            }
-            else{
-                int places = 0;
-                if(b[i] >= 97){
-                    places = b[i] - 97 + 26; 
-                }
-                else{
-                    places = b[i] - 65;
-                }
-                if(!used[places]){
-                    used[places] = true;
-                    count++;
-                }
-                if(place != places){
-                    differ = true;
-                }
-                mapTo[place] = places;
-            }
+            becomes[b] = a;
         }
-        if(!works || (count == 52 && differ)){
-            cout << -1 << endl;
-            continue;
+
+        if (uniqueChars.size() == 52) {
+            possible = false;
         }
-        
+        if (before == after) {
+            possible = true;
+        }
+
+        int answer = 0;
+        if (possible) {
+            vector<int> inDegree(52, 0);
+            for (int a = 0; a < 52; ++a) {
+                if (becomes[a] != -1 && becomes[a] != a) {
+                    inDegree[becomes[a]]++;
+                }
+            }
+
+            for (int a = 0; a < 52; ++a) {
+                if (becomes[a] != -1 && becomes[a] != a) {
+                    answer++;
+                }
+            }
+
+            vector<int> seen(52, 0);
+            for (int r = 0; r < 52; ++r) {
+                if (seen[r] == 0) {
+                    int a = r;
+                    while (a != -1 && seen[a] == 0) {
+                        seen[a] = r + 1;
+                        a = becomes[a];
+                    }
+                    if (a != -1 && a != becomes[a] && seen[a] == r + 1) {
+                        int s = a;
+                        bool freePass = false;
+                        do {
+                            seen[a] = 2;
+                            if (inDegree[a] > 1) {
+                                freePass = true;
+                            }
+                            a = becomes[a];
+                        } while (a != s);
+                        if (!freePass) {
+                            answer++;
+                        }
+                    }
+                }
+            }
+        } else {
+            answer = -1;
+        }
+
+        cout << answer << '\n';
     }
+
+    return 0;
 }
