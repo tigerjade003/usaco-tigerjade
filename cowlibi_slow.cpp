@@ -9,6 +9,12 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
+struct thing{
+    int x, y, t;
+};
+bool comp(thing &a, thing &b){
+    return a.t < b.t;
+}
 int G, N;
 double distance(int x1, int x2, int y1, int y2){
     return (x1-x2) * (x1-x2) + (y1-y2)*(y1-y2);
