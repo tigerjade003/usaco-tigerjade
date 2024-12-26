@@ -12,76 +12,42 @@ struct rule{
     int begin, end, id;
 };
 struct thing{
-    int x, id, val;
+    int start, end, id, val;
 };
 bool comp(const thing &a, const thing &b){
-    return a.x < b.x;
+    if(a.start == b.start) return a.val < b.val;
+    return a.start < b.start;
 }
 void solve(){
-    vector<int> locations, cutoff, existing;
-    vector<rule> rules;
     int N, Q;
     cin >> N >> Q;
+    vector<int> locations(N);
     for(int i = 0; i<N; i++){
-        int l;
-        cin >> l;
-        l *= 2;
-        locations.push_back(l);
-    }
-    cutoff.assign(Q, 0);
-    existing.assign(N, 0);
-    for(int i = 0; i<Q; i++){
-        int l, r;
-        cin >> l >> r >> cutoff[i];
-        l *= 2;
-        r *= 2;
-        l--;
-        r++;
-        rules.push_back({l, r, i});
+        cin >> locations[i];
     }
     sort(locations.begin(), locations.end());
-    for(auto rule: rules){
-        auto a = lower_bound(locations.begin(), locations.end(), rule.end);
-        auto b = lower_bound(locations.begin(), locations.end(), rule.begin);
-        cutoff[rule.id] -=  (a - b);
-    }
     multiset<thing, decltype(&comp)> all(comp);
-    for(int i = 0; i<N; i++){
-        all.insert({locations[i], i, 0});
-    }
     for(int i = 0; i<Q; i++){
-        all.insert({rules[i].begin, i, 1});
-        all.insert({rules[i].end, i, 2});
+        int l, r, t;
+        cin >> l >> r >> t;
+        int existing = upper_bound(locations.begin(), locations.end(), r) - lower_bound(locations.begin(), locations.end(), l);
+        all.insert({l, -1, r, existing - t});
     }
-    priority_queue<pair<int, int>> pq;
+    sort(locations.begin(), locations.end());
+    for(int i = 0; i<N; i++){
+        all.insert({locations[i], 0, 0, 0});
+    }
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     int ans = 0;
-    vector<bool> done(Q, false);
-    for(auto entry: all){
-        auto [x, id, val] = entry;
-        if(val == 0){
-            while(!pq.empty()){
-                auto [val, idx] = pq.top();
-                if(done[idx]) pq.pop();
-                else{
-                    break;
-                }
+    for (auto [l, type, r, cut] : all) {
+        if (type == -1) {
+            pq.push({ans + cut, r});
+        } else {
+            while (!pq.empty() && pq.top().second < l) {
+                pq.pop();
             }
-            if(pq.empty()){
+            if (pq.empty() || pq.top().first != ans) {
                 ans++;
-                continue;
-            }
-            if(pq.top().first + ans < 0){
-                ans++;
-            }
-        }
-        else{
-            if (val == 1){
-                if(cutoff[id] + ans <= 0){
-                    pq.push({cutoff[id]-ans, id});
-                }
-            }
-            else if (val == 2){
-                done[id] = true;
             }
         }
     }
