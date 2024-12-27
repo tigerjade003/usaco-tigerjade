@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define int long long
 void setIO(string file = "") {
   cin.tie(0)->sync_with_stdio(0);
   if ((int)(file.size())) {
@@ -34,17 +35,29 @@ bool hasno(int x, int y){
     return works;
 }
 int determine(){
+    int cost = 0;
     for(int i = 0; i<N; i++){
         if(!dir[i][N-1]){
-
+            cost += numof[i][N-1] * vertcost[i];
         }
-        
+        if(dir[N-1][i]){
+            cost += numof[N-1][i] * horizcost[i];
+        }
     }
+    return cost;
 }
-void update(int a, int b){
-
+void update(int x, int y){
+    if(dir[x][y]){
+        dfs(x+1, y, -numof[x][y]);
+        dfs(x, y+1, numof[x][y]);
+    }
+    else{
+        dfs(x, y+1, -numof[x][y]);
+        dfs(x+1, y, numof[x][y]);
+    }
+    dir[x][y] = !dir[x][y];
 }
-int main(){
+signed main(){
     cin >> N;
     dir.assign(N, vector<bool>(N, false));
     horizcost.assign(N, 0);
@@ -55,10 +68,10 @@ int main(){
             cin >> q;
             dir[i][j] = (q == 'D'); 
         }
-        cin >> horizcost[i];
+        cin >> vertcost[i];
     }
     for(int i = 0; i<N; i++){
-        cin >> vertcost[i];
+        cin >> horizcost[i];
     }
     numof.assign(N, vector<int>(N, 1));
     visited.assign(N, vector<bool>(N, false));
@@ -70,7 +83,6 @@ int main(){
             }
         }
     }
-    cout << 0 << endl;
     while(!lookat.empty()){
         auto [x, y] = lookat.front();
         lookat.pop();
@@ -91,7 +103,7 @@ int main(){
             }
         }
     }
-    cout << determine();
+    cout << determine() << endl;
     int Q;
     cin >> Q;
     for(int i = 0; i<Q; i++){
@@ -99,6 +111,6 @@ int main(){
         cin >> x >> y;
         x--; y--;
         update(x, y);
-        cout << determine();
+        cout << determine() << endl;
     }
 }
