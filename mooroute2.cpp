@@ -42,21 +42,22 @@ signed main(){
     queue<pair<int, int>> check;
     check.push({0, 0});
     bool checks = false;
+    pair<int, int> q;
     while(!check.empty()){
-        auto [airport, time] = check.front(); check.pop();
-        if(earliest[airport] != -1 && earliest[airport] < time) {
+        q = check.front(); check.pop();
+        if(earliest[q.first] != -1 && earliest[q.first] < q.second) {
             continue;
         }
-        earliest[airport] = time;
+        earliest[q.first] = q.second;
         if(checks){
-            time += layover[airport];
+            q.second += layover[q.first];
         }
         else{
             checks = true;
         }
-        for(auto j: flights[airport]){
+        for(auto j: flights[q.first]){
             auto [start, toport, end] = j;
-            if(start >= time && (earliest[toport] == -1 || earliest[toport] > end)){
+            if(start >= q.second && (earliest[toport] == -1 || earliest[toport] > end)){
                 check.push({toport, end});
             }
         }
