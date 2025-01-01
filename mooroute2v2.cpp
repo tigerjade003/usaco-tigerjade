@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define DEBUG false
+#define DEBUG true
 #define endl '\n'
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
@@ -10,7 +10,7 @@ void setIO(string file = "") {
     }
 }
 struct flight{
-    short start; int starttime; short to; int endtime;
+    int start, starttime, to, endtime;
 };
 bool cmp(const flight& a, const flight& b){
     if(a.start != b.start) return a.start < b.start;
@@ -31,12 +31,12 @@ signed main(){
     cin >> N >> M;
     flights.assign(M, {0, 0, 0, 0});
     layover.assign(N, 0);
-    short a, c;
-    int b, d;
+    int a, b, c, d;
     for(int i = 0; i<M; i++){
         cin >> a >> b >> c >> d;
-        a--, c--;
+        a--; c--;
         flights[i] = {a, b, c, d};
+        //cout << a << " " << b << " " << c << " " << d << endl;
     }
     sort(flights.begin(), flights.end(), cmp);
     fromports.assign(M, 0);
