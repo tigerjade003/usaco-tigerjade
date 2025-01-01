@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define DEBUG true
+#define DEBUG false
 #define endl '\n'
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
@@ -10,7 +10,7 @@ void setIO(string file = "") {
     }
 }
 struct flight{
-    int starttime, to, endtime;
+    int starttime; short to; int endtime;
 };
 bool cmp(const flight& a, const flight& b){
     return a.starttime < b.endtime;
@@ -26,37 +26,38 @@ signed main(){
         setIO();
     }
     cin >> N >> M;
-    flights.assign(M, vector<flight>());
+    flights.assign(N, vector<flight>());
     layover.assign(N, 0);
+    short a, c;
+    int b, d;
     for(int i = 0; i<M; i++){
-        int a, b, c, d;
         cin >> a >> b >> c >> d;
         a--, c--;
         flights[a].push_back({b, c, d});
     }
     for(int i = 0; i<N; i++){
-        for(auto adj: flights[i]){
-            cout << adj.starttime << " " << adj.endtime << " " << adj.to << endl;
-        }
-    }
-    for(int i = 0; i<N; i++){
         cin >> layover[i];
     }
     earliest.assign(N, -1);
-    earliest[0] = 0;
     queue<pair<int, int>> check;
-    check.push({0, -layover[0]});
+    check.push({0, 0});
     bool checks = false;
     while(!check.empty()){
         auto [airport, time] = check.front(); check.pop();
-        if(earliest[airport] != time) {
+        if(earliest[airport] != -1 && earliest[airport] < time) {
             continue;
         }
-        time += layover[airport];
-        for(auto [toport, start, end]: flights[airport]){
+        earliest[airport] = time;
+        if(checks){
+            time += layover[airport];
+        }
+        else{
+            checks = true;
+        }
+        for(auto j: flights[airport]){
+            auto [start, toport, end] = j;
             if(start >= time && (earliest[toport] == -1 || earliest[toport] > end)){
                 check.push({toport, end});
-                earliest[toport] = end;
             }
         }
     }
