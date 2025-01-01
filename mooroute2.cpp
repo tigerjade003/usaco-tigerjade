@@ -12,9 +12,12 @@ void setIO(string file = "") {
 struct flight{
     int starttime, to, endtime;
 };
+bool operator<(const flight& a, const flight& b){
+    if(a.starttime != b.starttime) return a.starttime < b.starttime;
+    return a.to < b.to;
+}
 int N, M;
 vector<vector<flight>> flights;
-vector<vector<bool>> used;
 vector<int> layover, earliest;
 signed main(){
     if(DEBUG){
@@ -52,8 +55,7 @@ signed main(){
         else{
             checks = true;
         }
-        for(int i = 0; i<flights[airport].size(); i++){
-            auto [start, toport, end] = flights[airport][i];
+        for(auto [start, toport, end]: flights[airport]){
             if(start >= time && (earliest[toport] == -1 || earliest[toport] > end)){
                 check.push({end, toport});
             }
