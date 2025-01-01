@@ -12,13 +12,14 @@ void setIO(string file = "") {
 struct flight{
     int starttime, to, endtime;
 };
-bool operator<(const flight& a, const flight& b){
+bool comp(const flight& a, const flight& b){
     if(a.starttime != b.starttime) return a.starttime < b.starttime;
     return a.to < b.to;
 }
 int N, M;
 vector<vector<flight>> flights;
 vector<int> layover, earliest;
+vector<int> idx;
 signed main(){
     if(DEBUG){
         setIO("test");
@@ -29,6 +30,7 @@ signed main(){
     cin >> N >> M;
     flights.assign(N, vector<flight>());
     layover.assign(N, 0);
+    idx.assign(N, 0);
     int a, b, c, d;
     for(int i = 0; i<M; i++){
         cin >> a >> b >> c >> d;
@@ -37,6 +39,8 @@ signed main(){
     }
     for(int i = 0; i<N; i++){
         cin >> layover[i];
+        idx[i] = flights[i].size()-1;
+        sort(flights[i].begin(), flights[i].end(), comp);
     }
     earliest.assign(N, -1);
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> check;
@@ -55,10 +59,9 @@ signed main(){
         else{
             checks = true;
         }
-        for(auto [start, toport, end]: flights[airport]){
-            if(start >= time && (earliest[toport] == -1 || earliest[toport] > end)){
-                check.push({end, toport});
-            }
+        while(idx[airport] >= 0 && flights[airport][idx[airport]].starttime >= time){
+            check.push({flights[airport][idx[airport]].endtime, flights[airport][idx[airport]].to});
+            idx[airport]--;
         }
     }
     for(auto q: earliest){
