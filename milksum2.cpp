@@ -28,10 +28,9 @@ signed main(){
     }
     sort(sorted.begin(), sorted.end());
     pfx[1] = sorted[0];
-    for(int i = 2; i<N; i++){
+    for(int i = 2; i<N+1; i++){
         pfx[i] = pfx[i-1] + sorted[i-1];
     }
-    pfx[N+1] = pfx[N];
     int ans = 0;
     for(int i = 0; i<N; i++){
         ans += (i+1)*sorted[i];
@@ -47,16 +46,15 @@ signed main(){
         }
         int origpos = lower_bound(sorted.begin(), sorted.end(), unsorted[i]) - sorted.begin();
         int newpos = lower_bound(sorted.begin(), sorted.end(), j) - sorted.begin();
-        cout << origpos << " " << newpos << endl;
         int output = ans;
         output -= unsorted[i] * (origpos + 1);
         output += (newpos+1) * j;
-        if(newpos > origpos){
-            
+        if(j > unsorted[i]){
+            output -= (pfx[newpos] - pfx[origpos]);
         }
         else{
-
+            output += (pfx[origpos] - pfx[newpos]);
         }
-        cout << output << endl;
+        cout << output << endl << endl;
     }
 }
