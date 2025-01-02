@@ -50,7 +50,7 @@ signed main(){
         cout << origpos << " " << newpos << endl;
         int output = ans;
         output -= unsorted[i] * (origpos + 1);
-        output += (newpos+1) * j;
+        output += (newpos) * j;
         if(newpos > origpos){
             
         }
