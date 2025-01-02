@@ -21,22 +21,21 @@ signed main(){
     cin >> N;
     unsorted.assign(N, 0);
     sorted.assign(N, 0);
-    pfx.assign(N+2, 0);
+    pfx.assign(N, 0);
     for(int i = 0; i<N; i++){
         cin >> unsorted[i];
         sorted[i] = unsorted[i];
     }
     sort(sorted.begin(), sorted.end());
-    pfx[1] = sorted[0];
-    for(int i = 2; i<N+1; i++){
-        pfx[i] = pfx[i-1] + sorted[i-1];
+    pfx[0] = sorted[0];
+    for(int i = 1; i<N; i++){
+        pfx[i] = pfx[i-1] + sorted[i];
     }
-    pfx[N+1] = pfx[N];
     int ans = 0;
     for(int i = 0; i<N; i++){
         ans += (i+1)*sorted[i];
     }
-    for(int i = 0; i<N+2; i++){
+    for(int i = 0; i<N; i++){
         cout << pfx[i] << " ";
     }
     cout << endl;
