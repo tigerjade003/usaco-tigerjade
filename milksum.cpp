@@ -1,40 +1,71 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define int long long
+#define DEBUG true
 int N, Q;
 vector<int> unsorted, sorted, pfx;
+void setIO(string file = "") {
+    cin.tie(0)->sync_with_stdio(0);
+    if (!file.empty()) {
+        freopen((file + ".in").c_str(), "r", stdin);
+        freopen((file + ".out").c_str(), "w", stdout);
+    }
+}
 signed main(){
+    if(DEBUG){
+        setIO("test");
+    }
+    else{
+        setIO();
+    }
     cin >> N;
     unsorted.assign(N, 0);
     sorted.assign(N, 0);
-    pfx.assign(N, 0);
+    pfx.assign(N+2, 0);
     for(int i = 0; i<N; i++){
         cin >> unsorted[i];
         sorted[i] = unsorted[i];
     }
     sort(sorted.begin(), sorted.end());
-    pfx[0] = sorted[0];
-    for(int i = 1; i<N; i++){
-        pfx[i] = pfx[i-1] + sorted[i];
+    pfx[1] = sorted[0];
+    for(int i = 2; i<N+1; i++){
+        pfx[i] = pfx[i-1] + sorted[i-1];
     }
+    pfx[N+1] = pfx[N];
     int ans = 0;
     for(int i = 0; i<N; i++){
         ans += (i+1)*sorted[i];
     }
+    for(int i = 0; i<N+2; i++){
+        cout << pfx[i] << " ";
+    }
+    cout << endl;
+    cout << ans << endl << endl;
     cin >> Q;
     int i, j;
     while(Q--){
         cin >> i >> j;
-        if(j == unsorted[i]) cout << ans;
-        else if(j > unsorted[i]){
-            //find where j goes in the sorted array
-            //find where unsorted[i] is in the sorted array
-            int origpos = lower_bound(sorted.begin(), sorted.end(), unsorted[i]) - sorted.begin();
-            int newpos = lower_bound(sorted.begin(), sorted.end(), j) - sorted.begin();
-            
+        i--;
+        if(j == unsorted[i]){
+            cout << ans << endl;
+            continue;
+        }
+        int origpos = lower_bound(sorted.begin(), sorted.end(), unsorted[i]) - sorted.begin();
+        int newpos = lower_bound(sorted.begin(), sorted.end(), j) - sorted.begin();
+        cout << origpos << " " << newpos << endl;
+        int output = ans;
+        output -= unsorted[i] * (origpos + 1);
+        output += (newpos+1) * j;
+        cout << output << endl;
+        cout << pfx[newpos] << " " << pfx[origpos] << endl;
+        cout << pfx[newpos+1] << " " << pfx[newpos-1] << endl;
+        cout << pfx[origpos+1] << " " << pfx[origpos-1] << endl;
+        if(j > unsorted[i]){
+            output -= (pfx[newpos-1] - pfx[origpos+1]);
         }
         else{
-
+            output += (pfx[origpos-1] - pfx[newpos+1]);
         }
+        cout << output << endl << endl;
     }
 }
