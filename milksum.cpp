@@ -61,10 +61,10 @@ signed main(){
         cout << pfx[newpos+1] << " " << pfx[newpos-1] << endl;
         cout << pfx[origpos+1] << " " << pfx[origpos-1] << endl;
         if(j > unsorted[i]){
-            output -= (pfx[newpos-1] - pfx[origpos+1]);
+            output -= (pfx[newpos] - pfx[origpos]);
         }
         else{
-            output += (pfx[origpos-1] - pfx[newpos+1]);
+            output += (pfx[origpos] - pfx[newpos]);
         }
         cout << output << endl << endl;
     }
