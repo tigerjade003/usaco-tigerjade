@@ -22,4 +22,5 @@ signed main(){
         cin >> a >> b;
         intervals[i] = {a, b};
     }
+    
 }
