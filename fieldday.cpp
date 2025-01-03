@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define DEBUG true
+#define DEBUG false
+#define endl '\n';
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -9,53 +10,35 @@ void setIO(string file = "") {
     }
 }
 int C, N;
-//vector<vector<bool>> teams; part of dumb thing
-unordered_map<string, int> teams;
-vector<vector<int>> lookat;
-int main(){
+int main() {
     if(DEBUG){
         setIO("test");
     }
     else{
         setIO();
     }
-    cin >> C >> N;
-    //dumb method --> dumbest, only passes sample
-    /*
-    teams.assign(N, vector<bool>(C, false));
-    for(int i = 0; i<N; i++){
-        for(int j = 0; j<C; j++){
-            char q;
-            cin >> q;
-            teams[i][j] = (q == 'H');
+	cin >> C >> N;
+	vector<int> bin;
+	vector<int> dist(1 << C, C);
+	vector<int> stor_pct(1 << ((C + 1) / 2));
+	for (int i = 0; i < stor_pct.size(); ++i)
+		stor_pct[i] = __builtin_popcount(i);
+	for (int kk = 0; kk < N; kk++) {
+		string s;
+		cin >> s;
+		int mask = 0;
+		for (int i = 0; i < C; ++i) mask ^= (s[i] - 'G') << i;
+		for (int i = 0; i < (1 << (C / 2)); ++i){
+            dist[mask^i] = min(dist[mask^i], stor_pct[i]);
         }
-    }
-    for(int i = 0; i<N; i++){
-        int ans = 0;
-        for(int j = 0; j<N; j++){
-            int cur = 0;
-            for(int q = 0; q<C; q++){
-                if(teams[i][q] != teams[j][q]) cur++;
-            }
-            ans = max(ans, cur);
+		bin.push_back(mask);
+	}
+	for (int x : bin) {
+		x = (1 << C) - 1 - x;
+		int ret = C;
+		for (int i = 0; i < (1 << (C - C / 2)); ++i){
+            ret = min(ret, dist[x ^ (i << (C / 2))] + stor_pct[i]);
         }
-        cout << ans << endl;
-    }*/
-    for(int i = 0; i<N; i++){
-        string q;
-        cin >> q;
-        if(teams.count(q) > 0){
-            lookat[teams.find(q) -> second].push_back(i);
-        }
-        else{
-            teams.insert({q, lookat.size()});
-            lookat.push_back(vector<int>{i});
-        }
-    }
-    for(int i = 0; i<N; i++){
-        for(int j = 0; j<lookat[i].size(); j++){
-            cout << lookat[i][j] << endl;
-        }
-    }
-    return 0;
+		cout << C - ret << endl;
+	}
 }
