@@ -13,6 +13,12 @@ string q;
 vector<int> numsof;
 vector<int> pfxsum;
 vector<char> bessie{'b', 'e', 's', 's', 'i', 'e'};
+int findnext(int start, int end, char find){
+    for(int i = start; i<=end; i++){
+        if(q[i] == find) return i;
+    }
+    return -1;
+}
 signed main(){
     if(DEBUG){
         setIO("test");
@@ -21,32 +27,21 @@ signed main(){
         setIO();
     }
     cin >> q;
-    int lookat = 0;
-    int bcount = 0;
-    pfxsum.assign(q.size(), 0);
-    numsof.assign(q.size(), 0);
-    for(int i = 0; i<q.size(); i++){
-        if(q[i] == bessie[lookat]){
-            lookat++;
-            if(lookat == 6){
-                bcount++;
-                lookat = 0;
+    int ans = 0;
+    vector<int> waiting(7, 0);
+    int rem = q.size();
+    for(char letter: q){
+        waiting[0]++;
+        for (int d = 5; d >= 0; d--) {
+            if(letter == bessie[d]){
+                waiting[d + 1] += waiting[d];
+                waiting[d] = 0;
             }
         }
-        numsof[i] = bcount;
-        pfxsum[i] = bcount;
-        cout << bcount << " ";
+        ans += waiting[6] * rem;
+        waiting[0] += waiting[6];
+        waiting[6] = 0;
+        rem--;
     }
-    cout << endl;
-    for(int i = 1; i<q.size(); i++){
-        pfxsum[i] += pfxsum[i-1];
-    }
-    const char* looks = q.c_str();
-    for(int i = 0; i<q.size(); i++){
-        //assuming we exclude the character, can we still find a b, e, s, s, i, before we find our e that starts the new one?
-        int lastpos = lower_bound(numsof.begin(), numsof.end(), numsof[i]+1) - numsof.begin();
-        if(lastpos == numsof.size()) lastpos--;
-        
-    }
-
+    cout << ans << endl;
 }
