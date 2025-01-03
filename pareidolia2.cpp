@@ -10,6 +10,7 @@ void setIO(string file = "") {
     }
 }
 string q;
+vector<int> numsof;
 vector<int> pfxsum;
 vector<char> bessie{'b', 'e', 's', 's', 'i', 'e'};
 signed main(){
@@ -17,6 +18,7 @@ signed main(){
     int lookat = 0;
     int bcount = 0;
     pfxsum.assign(q.size(), 0);
+    numsof.assign(q.size(), 0);
     for(int i = 0; i<q.size(); i++){
         if(q[i] == bessie[lookat]){
             lookat++;
@@ -25,11 +27,16 @@ signed main(){
                 lookat = 0;
             }
         }
+        numsof[i] = bcount;
         pfxsum[i] = bcount;
     }
     for(int i = 1; i<q.size(); i++){
         pfxsum[i] += pfxsum[i-1];
     }
-    
+    for(int i = 0; i<q.size(); i++){
+        //assuming we exclude the character, can we still find a b, e, s, s, i, before we find our e that starts the new one?
+        int lastpos = lower_bound(numsof.begin(), numsof.end(), numsof[i]+1) - numsof.begin();
+        
+    }
 
 }
