@@ -32,6 +32,7 @@ signed main(){
             pfx[intervals[i].second + intervals[j].second + 1]--;
         }
     }
+    cout << pfx[0] << endl;
     for(int i = 1; i<2*M + 1; i++){
         pfx[i] += pfx[i-1];
         cout << pfx[i] << endl;
