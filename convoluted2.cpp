@@ -19,7 +19,7 @@ signed main(){
     cin >> N >> M;
     starting.assign(M+1, 0);
     ending.assign(M+1, 0);
-    pfx.assign(2*M+1, 0);
+    pfx.assign(2*M+2, 0);
     for(int i = 0; i<N; i++){
         int a, b;
         cin >> a >> b;
