@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define endl '\n'
 #define int long long
+#define endl '\n'
 #define DEBUG false
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
@@ -10,34 +10,18 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-int T, N, M, x, y, has1, hasN, curlevel;
-vector<vector<int>> adj, connecteds;
-vector<bool> visited;
-void dfs(int k){
-    if(k == 0) has1 = curlevel;
-    if(k == N-1) hasN = curlevel;
-    visited[k] = true;
-    connecteds[curlevel].push_back(k);
-    for(auto q: adj[k]){
-        if(!visited[q]){
-            dfs(q);
-        }
+int T, n, m;
+vector<vector<int>> adj, tovert;
+vector<int> connecteds, srccost, dstcost;
+void dfs(const int currv, const int id) {
+  for(int child: adj[currv]) {
+    if(connecteds[child] != id) {
+      connecteds[child] = id;
+      dfs(child, id);
     }
+  }
 }
-int finddist(int first, int second){
-    if(first == second) return 0;
-    int p1 = 0, p2 = 0, mindiff = LLONG_MAX;
-    while(p1 < connecteds[first].size() && p2 < connecteds[second].size()){
-        mindiff = min(mindiff, abs((connecteds[first][p1] - connecteds[second][p2]) * (connecteds[first][p1] - connecteds[second][p2])));
-        if (connecteds[first][p1] < connecteds[second][p2]) {
-            p1++;
-        } else {
-            p2++;
-        }
-    }
-    return mindiff;
-}
-signed main(){
+signed main() {
     if(DEBUG){
         setIO("test");
     }
@@ -46,34 +30,52 @@ signed main(){
     }
     cin >> T;
     while(T--){
-        cin >> N >> M;
-        adj.assign(N, vector<int>());
-        for(int i = 0; i< M; i++){
-            cin >> x >> y; x--, y--;
-            adj[x].push_back(y);
-            adj[y].push_back(x);
+        cin >> n >> m;
+        adj.assign(n, vector<int>());
+        for(int i = 0; i<m; i++){
+            int a, b;
+            cin >> a >> b; a--, b--;
+            adj[a].push_back(b);
+            adj[b].push_back(a);
         }
-        visited.assign(N, false);
-        connecteds.assign(N, vector<int>());
-        curlevel = 0;
-        for(int i = 0; i<N; i++){
-            if(!visited[i]){
-                dfs(i);
-                curlevel++;
+        connecteds.assign(n, 0);
+        iota(connecteds.begin(), connecteds.end(), 0);
+        for(int i = 0; i<n; i++){
+            if(connecteds[i] == i){
+                dfs(i, i);
             }
         }
-        if(has1 == hasN){
+        if(connecteds[0] == connecteds[n-1]){
             cout << 0 << endl;
             continue;
         }
-        for(int i = 0; i<curlevel; i++){
-            sort(connecteds[i].begin(), connecteds[i].end());
+        tovert.assign(n, vector<int>());
+        for(int i = 0; i<n; i++){
+            tovert[connecteds[i]].push_back(i);
         }
-        int mindistance = LLONG_MAX;
-        for(int i = 0; i<curlevel; i++){
-            mindistance = min(mindistance, finddist(has1, i) + finddist(i, hasN));
+        int ans = 1e18;
+        srccost.assign(n, 1e9);
+        dstcost.assign(n, 1e9);
+        int srcidx = 0;
+        int dstidx = 0;
+        for(int i = 0; i<n; i++){
+            while(srcidx < tovert[connecteds[0]].size()){
+                srccost[connecteds[i]] = min(srccost[connecteds[i]], (long long)abs(i - tovert[connecteds[0]][srcidx]));
+                if(tovert[connecteds[0]][srcidx] < i) srcidx++;
+                else break;
+            }
+            if(srcidx) srcidx--;
+            while(dstidx < tovert[connecteds[n-1]].size()) {
+                dstcost[connecteds[i]] = min(dstcost[connecteds[i]], (long long)abs(i - tovert[connecteds[n-1]][dstidx]));
+                if(tovert[connecteds[n-1]][dstidx] < i) dstidx++;
+                else break;
+            }
+            if(dstidx) dstidx--;
         }
-        cout << mindistance << endl;
+        for(int i = 0; i<n; i++){
+            ans = min(ans, srccost[i]*srccost[i] + dstcost[i]*dstcost[i]);
+        }
+        cout << ans << endl;
     }
     return 0;
 }
