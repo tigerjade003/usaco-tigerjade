@@ -2,7 +2,7 @@
 using namespace std;
 #define int long long
 #define endl '\n'
-#define DEBUG true
+#define DEBUG false
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -11,41 +11,30 @@ void setIO(string file = "") {
     }
 }
 int N, M;
-vector<int> pfx, numbers;
-vector<set<pair<int, int>>> pfx2;
-vector<pair<int, int>> interval;
+vector<int> starting, ending;
+vector<int> pfx;
 signed main(){
     if(DEBUG) setIO("test");
     else setIO();
     cin >> N >> M;
-    pfx.assign(M+1, 0);
-    pfx2.assign(2*M+2, set<pair<int, int>>());
-    numbers.assign(2*M+2, 0);
-    interval.assign(N, {0, 0});
+    starting.assign(M+1, 0);
+    ending.assign(M+1, 0);
+    pfx.assign(2*M+1, 0);
     for(int i = 0; i<N; i++){
         int a, b;
         cin >> a >> b;
-        pfx[a]++;
-        pfx[b+1]--;
-        interval[i] = {a, b};
+        starting[a]++;
+        ending[b]++;
     }
-    for(int i = 1; i<M+1; i++){
-        pfx[i] += pfx[i-1];
-    }
-    for(int i = 0; i<M+1; i++){
-        cout << pfx[i] << endl;
-    }
-    cout << endl;
     for(int i = 0; i<=M; i++){
         for(int j = 0; j<=M; j++){
-            if(pfx2[i+j].find({i, j}) == pfx2[i+j].end()){
-                pfx2[i+j].insert({i, j});
-                numbers[i+j] += pfx[i] * pfx[j];
-            }
-            //cout << (i + j) << " " << i << " " << j << " " << pfx2[i+j].size() << endl;
+            pfx[i+j] += starting[i]*starting[j];
+            pfx[i+j+1] -= ending[i]*ending[j];
         }
     }
+    long tot = 0;
     for(int i = 0; i<=2*M; i++){
-        cout << numbers[i] << endl;
+        tot += pfx[i];
+        cout << tot << endl;
     }
 }
