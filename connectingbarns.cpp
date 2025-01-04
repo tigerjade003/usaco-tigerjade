@@ -2,7 +2,7 @@
 using namespace std;
 #define endl '\n'
 #define int long long
-#define DEBUG true
+#define DEBUG false
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -61,10 +61,12 @@ signed main(){
                 curlevel++;
                 connecteds.push_back(vector<int>());
                 dfs(i);
+                cout << "";
             }
         }
         if(has1 == hasN){
             cout << 0 << endl;
+            connecteds = vector<vector<int>>();
             continue;
         }
         for(int i = 0; i<connecteds.size(); i++){
@@ -72,15 +74,16 @@ signed main(){
         }
         int mindistance = LLONG_MAX;
         mindistance = min(mindistance, finddist(has1, hasN));
-        cout << mindistance << endl;
+        //cout << mindistance << endl;
+        //cout << connecteds.size() << endl;
         for(int i = 0; i<connecteds.size(); i++){
             if(i != has1 && i != hasN){
-                cout << i << " " << has1 << " " << hasN << endl;
+                //cout << i << " " << has1 << " " << hasN << endl;
                 mindistance = min(mindistance, finddist(has1, i) + finddist(i, hasN));
-                cout << mindistance << endl;
+                //cout << mindistance << endl;
             }
         }
-        cout << mindistance << endl << endl;
+        cout << mindistance << endl;
         connecteds = vector<vector<int>>();
     }
     return 0;
