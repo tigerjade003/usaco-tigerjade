@@ -10,10 +10,9 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-int T, N, M, x, y, has1, hasN;
+int T, N, M, x, y, has1, hasN, curlevel;
 vector<vector<int>> adj, connecteds;
 vector<bool> visited;
-int curlevel;
 void dfs(int k){
     if(k == 0) has1 = curlevel;
     if(k == N-1) hasN = curlevel;
@@ -26,6 +25,7 @@ void dfs(int k){
     }
 }
 int finddist(int first, int second){
+    if(first == second) return 0;
     int p1 = 0, p2 = 0, mindiff = LLONG_MAX;
     while(p1 < connecteds[first].size() && p2 < connecteds[second].size()){
         mindiff = min(mindiff, abs((connecteds[first][p1] - connecteds[second][p2]) * (connecteds[first][p1] - connecteds[second][p2])));
@@ -49,42 +49,31 @@ signed main(){
         cin >> N >> M;
         adj.assign(N, vector<int>());
         for(int i = 0; i< M; i++){
-            cin >> x >> y;
-            x--; y--;
+            cin >> x >> y; x--, y--;
             adj[x].push_back(y);
             adj[y].push_back(x);
         }
-        curlevel = -1;
         visited.assign(N, false);
+        connecteds.assign(N, vector<int>());
+        curlevel = 0;
         for(int i = 0; i<N; i++){
             if(!visited[i]){
-                curlevel++;
-                connecteds.push_back(vector<int>());
                 dfs(i);
-                cout << "";
+                curlevel++;
             }
         }
         if(has1 == hasN){
             cout << 0 << endl;
-            connecteds = vector<vector<int>>();
             continue;
         }
-        for(int i = 0; i<connecteds.size(); i++){
+        for(int i = 0; i<curlevel; i++){
             sort(connecteds[i].begin(), connecteds[i].end());
         }
         int mindistance = LLONG_MAX;
-        mindistance = min(mindistance, finddist(has1, hasN));
-        //cout << mindistance << endl;
-        //cout << connecteds.size() << endl;
-        for(int i = 0; i<connecteds.size(); i++){
-            if(i != has1 && i != hasN){
-                //cout << i << " " << has1 << " " << hasN << endl;
-                mindistance = min(mindistance, finddist(has1, i) + finddist(i, hasN));
-                //cout << mindistance << endl;
-            }
+        for(int i = 0; i<curlevel; i++){
+            mindistance = min(mindistance, finddist(has1, i) + finddist(i, hasN));
         }
         cout << mindistance << endl;
-        connecteds = vector<vector<int>>();
     }
     return 0;
 }
