@@ -41,8 +41,7 @@ signed main(){
                 int bestans = 0;
                 for (int j = last + 1, r = last; j < i; ++j) {
 					while (r + 1 < i &&
-						   (patches[r + 1].first - patches[j].first) * 2 <
-							   patches[i].first - patches[last].first) {
+						   (patches[r + 1].first - patches[j].first) * 2 < patches[i].first - patches[last].first) {
 						curans += patches[++r].second;
 					}
 					bestans = max(bestans, curans);
