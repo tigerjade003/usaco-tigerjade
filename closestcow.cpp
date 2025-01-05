@@ -13,10 +13,10 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-vector<pair<int, int>> grasses;
+vector<pair<int, int>> grasses, bestof;
 map<int, int> adds, removes;
 set<int> check;
-vector<int> Nhoj, bestof;
+vector<int> Nhoj;
 vector<inbetween> between;
 signed main(){
     if(DEBUG) setIO("test");
@@ -54,22 +54,29 @@ signed main(){
     between[M] = {runningtot, Nhoj[M-1], grasses[K-1].first, 1};
     for(int i = 0; i<K; i++){
         int leftmost, rightmost;
-        if(grasses[i].first < Nhoj[0]) leftmost = 2*grasses[i].first - Nhoj[0]+1;
-        else leftmost = 2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()] + 1;
-        if(grasses[i].first > Nhoj[M-1]) rightmost = 2 * grasses[i].first - Nhoj[M-1] - 1;
-        else rightmost = 2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()-1] -1;
-        adds[leftmost]++;
-        removes[rightmost+1]++;
+        if(grasses[i].first < Nhoj[0]) leftmost = max(2*grasses[i].first - Nhoj[0]+1, 0LL);
+        else leftmost = max(2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()] + 1, Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()-1]+1);
+        if(grasses[i].first > Nhoj[M-1]) rightmost = min(2 * grasses[i].first - Nhoj[M-1] - 1, 1000000000LL);
+        else rightmost = min(2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()-1] -1, Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()]-1);
+        adds[leftmost]+= grasses[i].second;
+        removes[rightmost+1]+= grasses[i].second;
         check.insert(leftmost);
         check.insert(rightmost);
     }
     int bestso = 0, before = -1, running = 0;
     for(int i: check){
         if(upper_bound(Nhoj.begin(), Nhoj.end(), i) != upper_bound(Nhoj.begin(), Nhoj.end(), before)){
-            bestof.push_back(bestso);
+            bestof.push_back({bestso, i});
             bestso = 0;
             running = 0;
         }
         running += adds[i] - removes[i];
+        before = i;
+        bestso = max(bestso, running);
+    }
+    bestof.push_back({bestso, *check.rend()});
+    cout << endl;
+    for(int i = 0; i<bestof.size(); i++){
+        cout << bestof[i].first << " " << bestof[i].second <<endl;
     }
 }
