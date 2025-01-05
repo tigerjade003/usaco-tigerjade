@@ -6,6 +6,9 @@ int K, M, N;
 struct inbetween{
     int val, x, y, needed;
 };
+bool comp(struct inbetween &a, struct inbetween &b){
+    return a.val < b.val;
+}
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -13,8 +16,8 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-vector<pair<int, int>> grasses, bestof;
-map<int, int> adds, removes;
+vector<pair<int, int>> grasses, bestof, bestones, besttwos;
+unordered_map<int, int> adds, removes;
 set<int> check;
 vector<int> Nhoj;
 vector<inbetween> between;
@@ -54,12 +57,15 @@ signed main(){
     between[M] = {runningtot, Nhoj[M-1], grasses[K-1].first, 1};
     for(int i = 0; i<K; i++){
         int leftmost, rightmost;
+        int nho = upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin();
+        if(nho >= M) nho = M-1; 
         if(grasses[i].first < Nhoj[0]) leftmost = max(2*grasses[i].first - Nhoj[0]+1, 0LL);
-        else leftmost = max(2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()] + 1, Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()-1]+1);
+        else leftmost = max(2 * grasses[i].first - Nhoj[nho] + 1, Nhoj[nho-1]+1);
         if(grasses[i].first > Nhoj[M-1]) rightmost = min(2 * grasses[i].first - Nhoj[M-1] - 1, 1000000000LL);
-        else rightmost = min(2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()-1] -1, Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()]-1);
+        else rightmost = min(2 * grasses[i].first - Nhoj[nho-1] -1, Nhoj[nho]-1);
         adds[leftmost]+= grasses[i].second;
         removes[rightmost+1]+= grasses[i].second;
+        cout << leftmost << " " << rightmost << " " << "BOOOOO" << endl;
         check.insert(leftmost);
         check.insert(rightmost);
     }
@@ -74,9 +80,14 @@ signed main(){
         before = i;
         bestso = max(bestso, running);
     }
-    bestof.push_back({bestso, *check.rend()});
+    bestof.push_back({bestso, *check.rbegin()});
     cout << endl;
     for(int i = 0; i<bestof.size(); i++){
         cout << bestof[i].first << " " << bestof[i].second <<endl;
+    }
+    sort(bestof.begin(), bestof.end());
+    sort(between.begin(), between.end());
+    for(int i = 0; i<bestof.size(); i++){
+        //bestones.push_back({bestof[i].first, lower_bound(grasses.begin(), grasses.end(), {bestof[i].second, 0LL}) - grasses.begin()}); code breaks here, time to write a new one
     }
 }
