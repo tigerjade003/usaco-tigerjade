@@ -19,7 +19,7 @@ void setIO(string file = "") {
 vector<pair<int, int>> grasses, bestof, bestones, besttwos;
 unordered_map<int, int> adds, removes;
 set<int> check;
-vector<int> Nhoj;
+vector<int> Nhoj, locations;
 vector<inbetween> between;
 signed main(){
     if(DEBUG) setIO("test");
@@ -32,8 +32,10 @@ signed main(){
         int a, b;
         cin >> a >> b;
         grasses[i] = {a, b};
+        locations[i] = a;
     }
     sort(grasses.begin(), grasses.end());
+    sort(locations.begin(), locations.end());
     for(int i = 0; i<M; i++){
         cin >> Nhoj[i];
     }
@@ -88,6 +90,7 @@ signed main(){
     sort(bestof.begin(), bestof.end());
     sort(between.begin(), between.end());
     for(int i = 0; i<bestof.size(); i++){
-        //bestones.push_back({bestof[i].first, lower_bound(grasses.begin(), grasses.end(), {bestof[i].second, 0LL}) - grasses.begin()}); code breaks here, time to write a new one
+        bestones.push_back({bestof[i].first, lower_bound(locations.begin(), locations.end(), bestof[i].second) - locations.begin()});
     }
+    
 }
