@@ -13,7 +13,7 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-vector<pair<int, int>> grasses, earlylate;
+vector<pair<int, int>> grasses;
 map<int, int> adds, removes;
 set<int> check;
 vector<int> Nhoj, bestof;
@@ -25,7 +25,6 @@ signed main(){
     grasses.assign(K, {0, 0});
     Nhoj.assign(M, 0);
     between.assign(M+1, {0, 0, 0, 0});
-    earlylate.assign(K, {0, 0});
     for(int i = 0; i<K; i++){
         int a, b;
         cin >> a >> b;
@@ -37,9 +36,7 @@ signed main(){
     }
     sort(Nhoj.begin(), Nhoj.end());
     vector<int> winnings;
-    int runningtot = 0;
-    int patches = 0;
-    int begin = 0;
+    int runningtot = 0, patches = 0, begin = 0;
     for(int i = 0; i<M; i++){
         while(patches < K && grasses[patches].first < Nhoj[i]){
             runningtot += grasses[patches].second;
@@ -63,12 +60,16 @@ signed main(){
         else rightmost = 2 * grasses[i].first - Nhoj[upper_bound(Nhoj.begin(), Nhoj.end(), grasses[i].first) - Nhoj.begin()-1] -1;
         adds[leftmost]++;
         removes[rightmost+1]++;
-        earlylate[i] = {leftmost, rightmost};
         check.insert(leftmost);
         check.insert(rightmost);
     }
-    bestof.assign(M+1, 0);
+    int bestso = 0, before = -1, running = 0;
     for(int i: check){
-
+        if(upper_bound(Nhoj.begin(), Nhoj.end(), i) != upper_bound(Nhoj.begin(), Nhoj.end(), before)){
+            bestof.push_back(bestso);
+            bestso = 0;
+            running = 0;
+        }
+        running += adds[i] - removes[i];
     }
 }
