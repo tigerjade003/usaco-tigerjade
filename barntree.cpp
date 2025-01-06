@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define DEBUG true
+#define int long long
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -11,11 +12,11 @@ void setIO(string file = "") {
 struct request{
     int to, from, amount; //amount is negative if it wants to give it away
 };
-int N, totbales, shouldbe;
+int N, totbales = 0, shouldbe;
 vector<int> curs, inbound;
 vector<vector<int>> adj;
 vector<request> answer;
-int main(){
+signed main(){
     if(DEBUG) setIO("test");
     else setIO();
     cin >> N;
@@ -43,11 +44,16 @@ int main(){
             requests.push({adj[i][0], i, shouldbe-curs[i]});
         }
     }
+    int q = requests.size();
+    for(int i = 0; i<q; i++){
+        auto [a, b, c] = requests.front();
+        cout << a << " " << b << " " << c << endl;
+        requests.pop();
+        requests.push({a, b, c});
+    }
     vector<bool> done(N, false);
     while(!requests.empty()){
-        //check if it is possible to fulfill the order
         auto [from, to, val] = requests.front(); requests.pop();
-        cout << from << " " << to << " " << val << endl;
         if(val < 0 || curs[to] >= val){
             curs[from] -= val;
             inbound[from]--;
@@ -82,7 +88,7 @@ int main(){
     }
     cout << answer.size() << endl;
     for(int i = 0; i<answer.size(); i++){
-        if(answer[i].amount > 0) cout << answer[i].from+1 << " " << answer[i].to+1 << " " << answer[i].amount << endl;
-        else cout << answer[i].to+1 << " " << answer[i].from+1 << " " << -answer[i].amount << endl;
+        if(answer[i].amount > 0) cout << answer[i].to+1 << " " << answer[i].from+1 << " " << answer[i].amount << endl;
+        else cout << answer[i].from+1 << " " << answer[i].to+1 << " " << -answer[i].amount << endl;
     }
 }
