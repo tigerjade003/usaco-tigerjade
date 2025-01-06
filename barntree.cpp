@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define DEBUG false
+#define DEBUG true
 void setIO(string file = "") {
     cin.tie(0)->sync_with_stdio(0);
     if (!file.empty()) {
@@ -8,11 +8,85 @@ void setIO(string file = "") {
         freopen((file + ".out").c_str(), "w", stdout);
     }
 }
-int N;
-vector<int> curs;
+struct request{
+    int to, from, amount; //amount is negative if it wants to give it away
+};
+int N, totbales, shouldbe;
+vector<int> curs, inbound, needed;
+vector<vector<int>> adj;
+vector<request> answer;
 int main(){
+    if(DEBUG) setIO("test");
+    else setIO();
     cin >> N;
+    adj.assign(N, vector<int>());
+    needed.assign(N, 0);
+    inbound.assign(N, 0);
     curs.assign(N, 0);
-    for(int i = 0; i<N; i++) cin >> curs[i];
-    
+    for(int i = 0; i<N; i++){
+        cin >> curs[i];
+        totbales += curs[i];
+    }
+    shouldbe = totbales/N;
+    for(int i = 0; i<N; i++){
+        needed[i] = shouldbe - curs[i];
+    }
+    for(int i = 0; i<N-1; i++){
+        int a, b;
+        cin >> a >> b;
+        a--, b--;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+        inbound[a]++;
+        inbound[b]++;
+    }
+    queue<request> requests;
+    stack<request> putoff;
+    for(int i = 0; i<N; i++){
+        if(adj[i].size() == 1){
+            requests.push({adj[i][0], i, shouldbe-curs[i]});
+        }
+    }
+    while(!requests.empty()){
+        //check if it is possible to fulfill the order
+        auto [from, to, val] = requests.front(); requests.pop();
+        if(val < 0 || curs[to] >= val){
+            curs[to] -= val;
+            needed[from] = 0;
+            inbound[to]--;
+            needed[to] = shouldbe-curs[to];
+            answer.push_back({from, to, val});
+            if(inbound[to] == 1){
+                for(int k: adj[to]){
+                    if(needed[k] != 0){
+                        requests.push({k, to, needed[to]});
+                        break;
+                    }
+                }
+            }  
+        }
+        else{
+            inbound[to]--;
+            needed[from] = 0;
+            needed[to] += val;
+            if(inbound[to] == 1){
+                for(int k: adj[to]){
+                    if(needed[k] != 0){
+                        requests.push({k, to, needed[to]});
+                        break;
+                    }
+                }
+            }
+            putoff.push({from, to, val});
+        }
+    }
+    while(!putoff.empty()){
+        auto [a, b, c] = putoff.top(); putoff.pop();
+        answer.push_back({a, b, c});
+    }
+    cout << answer.size() << endl;
+    for(int i = 0; i<answer.size(); i++){
+        if(answer[i].amount > 0) cout << answer[i].to+1 << " " << answer[i].from+1 << " " << answer[i].amount << endl;
+        else cout << answer[i].from+1 << " " << answer[i].to+1 << " " << -answer[i].amount << endl;
+    }
 }
