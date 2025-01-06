@@ -49,26 +49,26 @@ int main(){
         auto [from, to, val] = requests.front(); requests.pop();
         cout << from << " " << to << " " << val << endl;
         if(val < 0 || curs[to] >= val){
-            curs[to] -= val;
-            inbound[to]--;
-            done[from] = true;
+            curs[from] -= val;
+            inbound[from]--;
+            done[to] = true;
             answer.push_back({from, to, val});
-            if(inbound[to] == 1){
-                for(int k: adj[to]){
+            if(inbound[from] == 1){
+                for(int k: adj[from]){
                     if(!done[k]){
-                        requests.push({k, to, shouldbe-curs[to]});
+                        requests.push({from, k, shouldbe-curs[from]});
                         break;
                     }
                 }
             }  
         }
         else{
-            inbound[to]--;
-            done[from] = true;
-            if(inbound[to] == 1){
-                for(int k: adj[to]){
+            inbound[from]--;
+            done[to] = true;
+            if(inbound[from] == 1){
+                for(int k: adj[from]){
                     if(!done[k]){
-                        requests.push({k, to, shouldbe-curs[to]});
+                        requests.push({from, k, shouldbe-curs[from]});
                         break;
                     }
                 }
@@ -82,7 +82,7 @@ int main(){
     }
     cout << answer.size() << endl;
     for(int i = 0; i<answer.size(); i++){
-        if(answer[i].amount > 0) cout << answer[i].to+1 << " " << answer[i].from+1 << " " << answer[i].amount << endl;
-        else cout << answer[i].from+1 << " " << answer[i].to+1 << " " << -answer[i].amount << endl;
+        if(answer[i].amount > 0) cout << answer[i].from+1 << " " << answer[i].to+1 << " " << answer[i].amount << endl;
+        else cout << answer[i].to+1 << " " << answer[i].from+1 << " " << -answer[i].amount << endl;
     }
 }
