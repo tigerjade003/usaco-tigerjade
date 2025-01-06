@@ -12,7 +12,7 @@ struct request{
     int to, from, amount; //amount is negative if it wants to give it away
 };
 int N, totbales, shouldbe;
-vector<int> curs, inbound, needed;
+vector<int> curs, inbound;
 vector<vector<int>> adj;
 vector<request> answer;
 int main(){
@@ -20,7 +20,6 @@ int main(){
     else setIO();
     cin >> N;
     adj.assign(N, vector<int>());
-    needed.assign(N, 0);
     inbound.assign(N, 0);
     curs.assign(N, 0);
     for(int i = 0; i<N; i++){
@@ -28,9 +27,6 @@ int main(){
         totbales += curs[i];
     }
     shouldbe = totbales/N;
-    for(int i = 0; i<N; i++){
-        needed[i] = shouldbe - curs[i];
-    }
     for(int i = 0; i<N-1; i++){
         int a, b;
         cin >> a >> b;
@@ -47,19 +43,20 @@ int main(){
             requests.push({adj[i][0], i, shouldbe-curs[i]});
         }
     }
+    vector<bool> done(N, false);
     while(!requests.empty()){
         //check if it is possible to fulfill the order
         auto [from, to, val] = requests.front(); requests.pop();
+        cout << from << " " << to << " " << val << endl;
         if(val < 0 || curs[to] >= val){
             curs[to] -= val;
-            needed[from] = 0;
             inbound[to]--;
-            needed[to] = shouldbe-curs[to];
+            done[from] = true;
             answer.push_back({from, to, val});
             if(inbound[to] == 1){
                 for(int k: adj[to]){
-                    if(needed[k] != 0){
-                        requests.push({k, to, needed[to]});
+                    if(!done[k]){
+                        requests.push({k, to, shouldbe-curs[to]});
                         break;
                     }
                 }
@@ -67,12 +64,11 @@ int main(){
         }
         else{
             inbound[to]--;
-            needed[from] = 0;
-            needed[to] += val;
+            done[from] = true;
             if(inbound[to] == 1){
                 for(int k: adj[to]){
-                    if(needed[k] != 0){
-                        requests.push({k, to, needed[to]});
+                    if(!done[k]){
+                        requests.push({k, to, shouldbe-curs[to]});
                         break;
                     }
                 }
