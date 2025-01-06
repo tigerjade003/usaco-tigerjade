@@ -45,15 +45,10 @@ signed main(){
         }
     }
     int q = requests.size();
-    for(int i = 0; i<q; i++){
-        auto [a, b, c] = requests.front();
-        cout << a << " " << b << " " << c << endl;
-        requests.pop();
-        requests.push({a, b, c});
-    }
     vector<bool> done(N, false);
     while(!requests.empty()){
         auto [from, to, val] = requests.front(); requests.pop();
+        cout << from << " " << to << " " << val << endl;
         if(val < 0 || curs[to] >= val){
             curs[from] -= val;
             inbound[from]--;
@@ -66,7 +61,7 @@ signed main(){
                         break;
                     }
                 }
-            }  
+            }
         }
         else{
             inbound[from]--;
